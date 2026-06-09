@@ -699,7 +699,9 @@ if (utm_string_present && referral_code_absent) {
           citizenship: $("#citizenship").val(),
           consent: $("#consent").is(":checked") ? 1 : 0,
           preferredName: $("#preferred_name").val() || "",
+          maritalStatus: $("#marital_status").val() || "",
           flowId: $("#myinfo_flow_id").val() || "",
+          singPass: $("#myinfo_flow_id").val() ? 1 : 0,
         success: function (response) {
           if (response.success) {
             messageDiv

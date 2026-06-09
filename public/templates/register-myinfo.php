@@ -253,8 +253,9 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         },
 
         // Lock MyInfo-sourced fields so user can't edit them
+        // Note: postal_code is NOT locked — always user-editable per requirement
         lockMyInfoFields: function() {
-            var lockedFields = ['dob', 'gender', 'race', 'citizenship', 'postal_code'];
+            var lockedFields = ['dob', 'gender', 'race', 'citizenship', 'name'];
             var self = this;
 
             lockedFields.forEach(function(field) {
@@ -299,29 +300,64 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         },
 
         applyPrefillData: function(fields) {
-            var fieldMap = {
-                'name':           '#name',
-                'dateOfBirth':    '#dob',
-                'sex':            '#gender',
-                'race':           '#race',
-                'nationality':    '#citizenship',
-                'postalCode':     '#postal_code',
-                'address':        '#address',
-                'maritalStatus':  '#marital_status'
-            };
+            var self = this;
 
-            Object.keys(fieldMap).forEach(function(myinfoKey) {
-                var formId = fieldMap[myinfoKey];
-                var value  = fields[myinfoKey];
-                if (value !== undefined && value !== null && value !== '') {
-                    var $el = $(formId);
+            // Helper: set form value
+            function setVal(formId, value) {
+                var $el = $(formId);
+                if ($el.length && value !== undefined && value !== null && value !== '') {
                     $el.val(value);
                 }
-            });
+            }
+
+            // Map MyInfo race codes to form values
+            // MyInfo race values: CHINESE, MALAY, INDIAN, EURASIAN, or free-text
+            if (fields.race !== undefined && fields.race !== null && fields.race !== '') {
+                var raceMap = {
+                    'CHINESE':   'chinese',
+                    'MALAY':     'malay',
+                    'INDIAN':    'indian',
+                    'EURASIAN':  'eurasian'
+                };
+                var mappedRace = raceMap[fields.race.toUpperCase()];
+                if (mappedRace) {
+                    setVal('#race', mappedRace);
+                } else {
+                    // Not a standard race — set to "Others" and populate the spec field
+                    setVal('#race', 'others');
+                    setVal('#others', fields.race);
+                }
+            }
+
+            // Map MyInfo nationality to citizenship
+            // SG → singaporecitizen, anything else → leave blank (non-SG can't register)
+            if (fields.nationality !== undefined && fields.nationality !== null && fields.nationality !== '') {
+                var nationalityMap = {
+                    'SG':  'singaporecitizen',
+                    'SINGAPORE': 'singaporecitizen'
+                };
+                var mappedCitz = nationalityMap[fields.nationality.toUpperCase()];
+                if (mappedCitz) {
+                    setVal('#citizenship', mappedCitz);
+                }
+                // Non-SG nationality: leave citizenship blank → user can't proceed
+                // (the form will catch this on submit)
+            }
+
+            // Map MyInfo sex to gender
+            if (fields.sex !== undefined && fields.sex !== null && fields.sex !== '') {
+                var sexMap = { 'M': 'male', 'F': 'female' };
+                var mappedSex = sexMap[fields.sex.toUpperCase()];
+                if (mappedSex) { setVal('#gender', mappedSex); }
+            }
+
+            setVal('#name',         fields.name);
+            setVal('#dob',          fields.dateOfBirth);
+            setVal('#postal_code',  fields.postalCode);
+            setVal('#marital_status', fields.maritalStatus);
 
             if (fields.preferredName) {
-                var $pn = $('#preferred_name');
-                if ($pn.length) { $pn.val(fields.preferredName); }
+                setVal('#preferred_name', fields.preferredName);
             }
         }
     };

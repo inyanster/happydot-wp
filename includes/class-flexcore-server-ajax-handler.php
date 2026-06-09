@@ -1439,6 +1439,18 @@ class FlexCore_Server_Ajax_Handler
         $postalCode     = isset($_POST['postal_code']) ? sanitize_text_field($_POST['postal_code']) : '';
         $raceDetails    = isset($_POST['others']) ? sanitize_text_field($_POST['others']) : '';
         $preferredName  = isset($_POST['preferredName']) ? sanitize_text_field($_POST['preferredName']) : '';
+        $maritalStatus = isset($_POST['maritalStatus']) ? sanitize_text_field($_POST['maritalStatus']) : '';
+        $singPass      = isset($_POST['singPass']) ? (int) $_POST['singPass'] : 0;
+
+        // Only Singapore Citizens and Permanent Residents can register
+        $allowedCitizenship = ['singaporecitizen', 'permanentResident'];
+        if (!in_array($citizenship, $allowedCitizenship, true)) {
+            wp_send_json_error(array(
+                'message' => __('Only Singapore Citizens and Permanent Residents are eligible to register.', 'flexcore-server'),
+                'error_code' => 'citizenship_not_allowed'
+            ));
+            return;
+        }
 
         // Validate required fields
         if (empty($email) || empty($fullName) || empty($password)) {
@@ -1473,7 +1485,9 @@ class FlexCore_Server_Ajax_Handler
             "mobileNumber"  => $mobileNumber,
             "citizenship"   => $citizenship,
             "postalCode"    => $postalCode,
-            "preferredName" => $preferredName
+            "preferredName" => $preferredName,
+            "maritalStatus" => $maritalStatus,
+            "singPass" => $singPass
         );
         $api = new FlexCore_Server_API();
         $response = $api->merged_register($data);
