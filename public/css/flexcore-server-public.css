@@ -1,0 +1,396 @@
+/* *
+ * FlexCore Server Public Styles
+ */
+
+/* Base styles 
+.flexcore-form {
+    max-width: 800px;
+    margin: 2em auto;
+    padding: 2em;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.flexcore-form h2 {
+    margin: 0 0 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #eee;
+    font-size: 1.5em;
+}
+
+.flexcore-form .form-group {
+    margin-bottom: 1.5em;
+}
+
+.flexcore-form label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+.flexcore-form input[type="email"],
+.flexcore-form input[type="password"],
+.flexcore-form input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.flexcore-form .form-submit {
+    margin-top: 2em;
+}
+
+.flexcore-form .form-links {
+    margin-top: 1em;
+    text-align: center;
+}
+
+/* Message styles 
+.flexcore-message {
+    padding: 1em;
+    margin: 1em 0;
+    border-radius: 4px;
+}
+
+.flexcore-message.error {
+    background-color: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+}
+
+.flexcore-message.success {
+    background-color: #efe;
+    color: #3c3;
+    border: 1px solid #cfc;
+}
+
+.flexcore-message.info {
+    background-color: #eef;
+    color: #33c;
+    border: 1px solid #ccf;
+}
+
+/* Dashboard styles 
+.flexcore-dashboard {
+    max-width: 800px;
+    margin: 2em auto;
+    padding: 2em;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.dashboard-navigation {
+    margin: 2em 0;
+    display: flex;
+    gap: 1em;
+}
+
+/* Password strength meter 
+.password-strength-meter {
+    height: 4px;
+    background: #eee;
+    margin: 0.5em 0;
+    border-radius: 2px;
+}
+
+.password-strength-meter.weak { background: #f44336; }
+.password-strength-meter.medium { background: #ff9800; }
+.password-strength-meter.strong { background: #4caf50; }
+.password-strength-meter.very-strong { background: #2e7d32; }
+
+.password-strength-text {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 0.25em;
+}
+
+/* Loading state 
+.flexcore-form button.loading {
+    position: relative;
+    color: transparent;
+}
+
+.flexcore-form button.loading::after {
+    content: "";
+    position: absolute;
+    width: 1em;
+    height: 1em;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s infinite linear;
+    left: calc(50% - 0.5em);
+    top: calc(50% - 0.5em);
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Delete account specific styles 
+.flexcore-delete-account-form .button-danger {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #fff;
+}
+
+.flexcore-delete-account-form .button-danger:hover {
+    background: #c82333;
+    border-color: #bd2130;
+}
+
+.delete-account-warning {
+    margin-bottom: 2em;
+}
+
+/* Enhanced Profile Form Styles 
+.flexcore-profile-form h2 {
+    font-size: 1.8em;
+    margin-bottom: 1.5em;
+    color: #2c3338;
+    text-align: center;
+}
+
+.flexcore-profile-form .form-description {
+    text-align: center;
+    color: #646970;
+    margin-bottom: 2em;
+    font-size: 1.1em;
+}
+
+.flexcore-profile-form .form-row {
+    margin-bottom: 2em;
+}
+
+.flexcore-profile-form .form-group {
+    position: relative;
+    margin-bottom: 1.5em;
+}
+
+.flexcore-profile-form label small {
+    opacity: 0.7;
+    font-size: 0.85em;
+    margin-top: 0.3em;
+    display: block;
+}
+
+.flexcore-profile-form input[type="text"],
+.flexcore-profile-form input[type="email"],
+.flexcore-profile-form input[type="tel"],
+.flexcore-profile-form select {
+    background-color: #fff;
+    border: 1px solid #dcdcde;
+    padding: 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 16px;
+}
+
+.flexcore-profile-form input:focus,
+.flexcore-profile-form select:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.flexcore-profile-form select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23646970'%3E%3Cpath d='M8 10L4 6h8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.flexcore-profile-form .form-error {
+    color: #dc3545;
+    display: none;
+    margin-top: 0.25em;
+    font-size: 0.85em;
+}
+
+.flexcore-profile-form input:invalid,
+.flexcore-profile-form select:invalid {
+    border-color: #dc3545;
+}
+
+.flexcore-profile-form input:focus:invalid,
+.flexcore-profile-form select:focus:invalid {
+    box-shadow: 0 0 0 1px #dc3545;
+}
+
+.flexcore-profile-form input.has-error,
+.flexcore-profile-form select.has-error {
+    border-color: #dc3545;
+    background-color: #fff8f8;
+}
+
+.flexcore-profile-form input.is-valid,
+.flexcore-profile-form select.is-valid {
+    border-color: #28a745;
+    background-color: #f8fff8;
+}
+
+.flexcore-profile-form .form-hint {
+    color: #6c757d;
+    display: block;
+    margin-top: 0.25em;
+    font-size: 0.85em;
+}
+
+.flexcore-profile-form input:disabled,
+.flexcore-profile-form input:read-only {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+}
+
+/* Mobile number specific styles 
+.flexcore-profile-form input[type="tel"] {
+    letter-spacing: 1px;
+    font-family: monospace;
+}
+
+/* Date input specific styles 
+.flexcore-profile-form input[data-mask="dob"] {
+    letter-spacing: 1px;
+    font-family: monospace;
+}
+
+/* Checkbox styles 
+.flexcore-profile-form .consent-checkbox {
+    margin: 2em 0;
+}
+
+.flexcore-profile-form .consent-checkbox label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5em;
+}
+
+.flexcore-profile-form .consent-checkbox input[type="checkbox"] {
+    margin-top: 0.3em;
+}
+
+.flexcore-profile-form .consent-checkbox span {
+    font-size: 0.9em;
+    line-height: 1.4;
+    color: #4a5568;
+}
+
+/* Form row responsiveness
+@media (max-width: 768px) {
+    .flexcore-profile-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 1em;
+    }
+}
+
+/* Validation animations 
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translate3d(0, -10px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes validPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.flexcore-profile-form input.has-error,
+.flexcore-profile-form select.has-error {
+    animation: shake 0.5s ease-in-out;
+}
+
+.flexcore-profile-form .form-error {
+    animation: fadeInDown 0.3s ease-out;
+}
+
+.flexcore-profile-form input.is-valid,
+.flexcore-profile-form select.is-valid {
+    animation: validPulse 0.3s ease-out;
+}
+
+/* Success message animation 
+.flexcore-message.success {
+    animation: fadeInDown 0.5s ease-out;
+}
+    /* Registration Form Styles */
+/* .becomehappydotter-wrap {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hd-form-group {
+    margin-bottom: 15px;
+}
+
+.hd-formfild {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.hd-fild-line-error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.hd-btn {
+    background: #0073aa;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+.hd-btn:disabled {
+    background: #ccc;
+}
+
+.error {
+    border-color: red !important;
+}
+
+.hd-none {
+    display: none;
+} */
+
+/* .hd-without-login {
+    display: flex;
+    gap: 10px;
+}
+
+.hd-btn {
+    background-color: #d72027;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.hd-btn:hover {
+    background-color: #b51c22;
+} */
