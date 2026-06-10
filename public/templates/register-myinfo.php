@@ -326,6 +326,17 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                     // Not a standard race — set to "Others" and populate the spec field
                     setVal('#race', 'others');
                     setVal('#others', fields.race);
+                    // Show the "Please Specify" field since it's now active
+                    var othersGroup = document.getElementById('othersRaceGroup');
+                    if (othersGroup) othersGroup.style.display = 'block';
+                    // Lock and grey out the spec field since it's from MyInfo
+                    var $othersInput = $('#others');
+                    if ($othersInput.length) {
+                        $othersInput.prop('readonly', true).addClass('myinfo-locked');
+                        $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').remove();
+                        $othersInput.closest('.hd-form-group').append('<div class="myinfo-locked-badge">🔒 Verified via Singpass MyInfo</div>');
+                        $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').addClass('show');
+                    }
                 }
             }
 
@@ -345,9 +356,11 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             }
 
             // Map MyInfo sex to gender
+            // Backend already lowercases to 'male'/'female'/'others'; MyInfo raw codes are 'M'/'F'
             if (fields.sex !== undefined && fields.sex !== null && fields.sex !== '') {
-                var sexMap = { 'M': 'male', 'F': 'female' };
-                var mappedSex = sexMap[fields.sex.toUpperCase()];
+                var sexVal = (typeof fields.sex === 'object' && fields.sex !== null) ? fields.sex.code : fields.sex;
+                var sexMap = { 'M': 'male', 'F': 'female', 'male': 'male', 'female': 'female', 'others': 'others' };
+                var mappedSex = sexMap[(sexVal || '').toUpperCase()] || sexMap[(sexVal || '').toLowerCase()];
                 if (mappedSex) { setVal('#gender', mappedSex); }
             }
 

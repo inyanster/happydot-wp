@@ -9,8 +9,35 @@ if (!defined('ABSPATH')) {
 }
 ?>
 <style>
-    .flexcore_requiments li.valid {
-        color: green !important;
+    ol.flexcore_requiments li.valid {
+        color: #2e7d32 !important;
+        font-weight: 600;
+    }
+
+    /* Guide box in right col: force to occupy ~2 row-heights (matching Create+Confirm password) */
+    .guide-2rows {
+        min-height: 130px;
+    }
+    .guide-2rows .flexcore_requiments {
+        margin: 0;
+        padding-left: 20px;
+    }
+    .guide-2rows .flexcore_requiments li {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 5px;
+        list-style-type: decimal;
+        transition: color 0.2s;
+    }
+    .guide-2rows .flexcore_requiments li.valid {
+        color: #2e7d32 !important;
+        font-weight: 600;
+    }
+    .guide-2rows .guide-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 8px;
     }
 
     .requiments li.matched {
@@ -23,7 +50,8 @@ if (!defined('ABSPATH')) {
     }
 
     #referral_code,
-    #referral_code_label {
+    #referral_code_label,
+    #othersRaceGroup {
         display: none;
     }
 
@@ -215,6 +243,7 @@ if (!defined('ABSPATH')) {
                         <option value=""><?php esc_html_e('Select gender', 'flexcore-server'); ?></option>
                         <option value="male"><?php esc_html_e('Male', 'flexcore-server'); ?></option>
                         <option value="female"><?php esc_html_e('Female', 'flexcore-server'); ?></option>
+                        <option value="others"><?php esc_html_e('Others', 'flexcore-server'); ?></option>
                     </select>
                     <div class="field-error gender-error" style="display: none;"></div>
                 </div>
@@ -265,8 +294,8 @@ if (!defined('ABSPATH')) {
 
             <div class="hd-col-6">
                 <div class="hd-form-group">
-                    <label class="hd-label" for="marital_status"><?php esc_html_e('Marital Status', 'flexcore-server'); ?></label>
-                    <select class="hd-formfild" id="marital_status" name="maritalStatus">
+                    <label class="hd-label" for="marital_status"><?php esc_html_e('Marital Status', 'flexcore-server'); ?><span>*</span></label>
+                    <select class="hd-formfild" id="marital_status" name="maritalStatus" required>
                         <option value=""><?php esc_html_e('Select marital status', 'flexcore-server'); ?></option>
                         <option value="single"><?php esc_html_e('Single', 'flexcore-server'); ?></option>
                         <option value="soontobemarried"><?php esc_html_e('Soon to be Married', 'flexcore-server'); ?></option>
@@ -297,6 +326,22 @@ if (!defined('ABSPATH')) {
                             tooltip.style.display = 'none';
                         });
                     }
+
+                    // Toggle "Please Specify" field when race changes
+                    var raceSelect = document.getElementById('race');
+                    var othersGroup = document.getElementById('othersRaceGroup');
+                    if (raceSelect && othersGroup) {
+                        raceSelect.addEventListener('change', function() {
+                            if (raceSelect.value === 'others') {
+                                othersGroup.style.display = 'block';
+                            } else {
+                                othersGroup.style.display = 'none';
+                                // Clear the others field when switching away
+                                var othersInput = document.getElementById('others');
+                                if (othersInput) othersInput.value = '';
+                            }
+                        });
+                    }
                 });
             </script>
 
@@ -324,18 +369,15 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
-            <div class="hd-col-12">
+            <div class="hd-col-6">
                 <div class="hd-form-group">
                     <label class="hd-label" for="password"><?php esc_html_e('Create a Password', 'flexcore-server'); ?><span>*</span></label>
                     <div class="position-relative password-eye hp-pwd-protect">
                         <input class="hd-formfild password-input" type="password" id="password" name="password" required>
                         <span class="hd-login-toggle-password"><i class="fa fa-eye"></i></span>
-                        <div class="field-error" id="error-password"></div>
                     </div>
+                    <div class="field-error" id="error-password"></div>
                 </div>
-            </div>
-
-            <div class="hd-col-12">
                 <div class="hd-form-group">
                     <label class="hd-label" for="confirm_password"><?php esc_html_e('Confirm Password', 'flexcore-server'); ?><span>*</span></label>
                     <div class="position-relative password-eye hp-pwd-protect">
@@ -344,23 +386,6 @@ if (!defined('ABSPATH')) {
                     </div>
                     <div class="field-error" id="error-confirm_password"></div>
                 </div>
-            </div>
-
-            <div class="hd-col-12">
-                <div class="hd-signup-info">
-                    <p><?php esc_html_e('Your password must:', 'flexcore-server'); ?></p>
-                    <ol class="flexcore_requiments">
-                        <li id="flexcore_length">Be between 12 - 15 characters in length</li>
-                        <li id="flexcore_uppercase">Contain at least 1 uppercase (capital) letter</li>
-                        <li id="flexcore_lowercase">Contain at least 1 lowercase (small) letter</li>
-                        <li id="flexcore_number">Contain at least 1 number</li>
-                        <li id="flexcore_special">Contain at least 1 special character (!@#$%^&*())</li>
-                    </ol>
-                    <h6 id="h6" class="hd-requirements-matched" style="display: none;"><?php esc_html_e('Password requirement all met!', 'flexcore-server'); ?></h6>
-                </div>
-            </div>
-
-            <div class="hd-col-12">
                 <div class="hd-form-group">
                     <label class="hd-label" for="mobile"><?php esc_html_e('Mobile No.', 'flexcore-server'); ?><span>*</span></label>
                     <input class="hd-formfild" type="text" id="mobile" name="mobile" required maxlength="8" placeholder="Phone Number" data-mask="mobile">
@@ -371,7 +396,18 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
 
-            <div class="hd-col-12">
+            <div class="hd-col-6">
+                <div class="hd-signup-info guide-2rows">
+                    <p><?php esc_html_e('Your password must:', 'flexcore-server'); ?></p>
+                    <ol class="flexcore_requiments">
+                        <li id="flexcore_length">Be between 12 - 15 characters in length</li>
+                        <li id="flexcore_uppercase">Contain at least 1 uppercase (capital) letter</li>
+                        <li id="flexcore_lowercase">Contain at least 1 lowercase (small) letter</li>
+                        <li id="flexcore_number">Contain at least 1 number</li>
+                        <li id="flexcore_special">Contain at least 1 special character (!@#$%^&*())</li>
+                    </ol>
+                    <h6 id="h6" class="hd-requirements-matched" style="display: none;"><?php esc_html_e('Password requirement all met!', 'flexcore-server'); ?></h6>
+                </div>
                 <div class="hd-form-group">
                     <label class="hd-label" for="postal_code"><?php esc_html_e('Postal Code', 'flexcore-server'); ?><span>*</span></label>
                     <input class="hd-formfild" type="text" id="postal_code" name="postal_code" required maxlength="6" pattern="^\d{6}$" placeholder="Postal Code">
