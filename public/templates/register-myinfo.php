@@ -311,11 +311,10 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             }
 
             // Map MyInfo race codes to form values
-            // MyInfo race values: CHINESE, MALAY, INDIAN, EURASIAN, or free-text
+            // MyInfo race values: CHINESE, MALAY, INDIAN, EURASIAN, or any other free-text value (e.g. EUROPEAN)
             if (fields.race !== undefined && fields.race !== null && fields.race !== '') {
                 var raceMap = {
                     'CHINESE':   'chinese',
-                    'EUROPEAN':  'eurasian',
                     'MALAY':     'malay',
                     'INDIAN':    'indian',
                     'EURASIAN':  'eurasian'
