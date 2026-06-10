@@ -255,7 +255,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         // Lock MyInfo-sourced fields so user can't edit them
         // Note: postal_code is NOT locked — always user-editable per requirement
         lockMyInfoFields: function() {
-            var lockedFields = ['dob', 'gender', 'race', 'citizenship', 'name'];
+            var lockedFields = ['dob', 'gender', 'race', 'citizenship', 'name', 'marital_status'];
             var self = this;
 
             lockedFields.forEach(function(field) {
@@ -315,6 +315,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             if (fields.race !== undefined && fields.race !== null && fields.race !== '') {
                 var raceMap = {
                     'CHINESE':   'chinese',
+                    'EUROPEAN':  'eurasian',
                     'MALAY':     'malay',
                     'INDIAN':    'indian',
                     'EURASIAN':  'eurasian'
