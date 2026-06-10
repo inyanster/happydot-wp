@@ -253,7 +253,10 @@ class FlexCore_Server_Public
                     true
                 );
             }
-            if (has_shortcode($post->post_content, 'flexcore_register')) {
+            if (has_shortcode($post->post_content, 'flexcore_register')
+                || has_shortcode($post->post_content, 'flexcore_register_myinfo')
+                || has_shortcode($post->post_content, 'flexcore_referral_signup')
+            ) {
                 // wp_enqueue_script(
                 //     'flexcore-server-register',
                 //     plugin_dir_url(__FILE__) . 'js/modules/registration.js',
@@ -274,6 +277,31 @@ class FlexCore_Server_Public
                     array('jquery', 'flexcore-server-public'),
                     FLEXCORE_SERVER_VERSION,
                     true
+                );
+                wp_add_inline_script(
+                    'flexcore-server-merged-register',
+                    '(function(){'
+                    . 'document.addEventListener("DOMContentLoaded",function(){'
+                    . 'var pw=document.getElementById("password");'
+                    . 'if(pw){pw.addEventListener("input",function(){'
+                    . 'var v=this.value,'
+                    . 'lr=document.getElementById("flexcore_length"),ur=document.getElementById("flexcore_uppercase"),'
+                    . 'lrr=document.getElementById("flexcore_lowercase"),nr=document.getElementById("flexcore_number"),'
+                    . 'sr=document.getElementById("flexcore_special");'
+                    . 'if(v.length>=12&&v.length<=15)lr.classList.add("valid");else{lr.classList.remove("valid");}'
+                    . 'if(/[A-Z]/.test(v))ur.classList.add("valid");else{ur.classList.remove("valid");}'
+                    . 'if(/[a-z]/.test(v))lrr.classList.add("valid");else{lrr.classList.remove("valid");}'
+                    . 'if(/\\d/.test(v))nr.classList.add("valid");else{nr.classList.remove("valid");}'
+                    . 'if(/[!@#$%^&*()]/.test(v))sr.classList.add("valid");else{sr.classList.remove("valid");}'
+                    . '});}'
+                    . 'var cp=document.getElementById("confirm_password");'
+                    . 'if(cp){cp.addEventListener("input",function(){'
+                    . 'var p=document.getElementById("password").value,c=this.value;'
+                    . 'if(c!==p)this.classList.add("has-error");else{this.classList.remove("has-error");}'
+                    . '});}'
+                    . '});'
+                    . '})();',
+                    'after'
                 );
             }
 

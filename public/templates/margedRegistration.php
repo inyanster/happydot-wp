@@ -386,16 +386,9 @@ if (!defined('ABSPATH')) {
                     </div>
                     <div class="field-error" id="error-confirm_password"></div>
                 </div>
-                <div class="hd-form-group">
-                    <label class="hd-label" for="mobile"><?php esc_html_e('Mobile No.', 'flexcore-server'); ?><span>*</span></label>
-                    <input class="hd-formfild" type="text" id="mobile" name="mobile" required maxlength="8" placeholder="Phone Number" data-mask="mobile">
-                    <small class="form-hint form-error mobile-error" style="display: none;">
-                        <?php esc_html_e('Please enter a valid Singapore mobile number', 'flexcore-server'); ?>
-                    </small>
-                    <div class="field-error mobileNo-error" style="display: none;"></div>
-                </div>
             </div>
 
+            <!-- RIGHT col: Password requirements guide box -->
             <div class="hd-col-6">
                 <div class="hd-signup-info guide-2rows">
                     <p><?php esc_html_e('Your password must:', 'flexcore-server'); ?></p>
@@ -408,6 +401,20 @@ if (!defined('ABSPATH')) {
                     </ol>
                     <h6 id="h6" class="hd-requirements-matched" style="display: none;"><?php esc_html_e('Password requirement all met!', 'flexcore-server'); ?></h6>
                 </div>
+            </div>
+
+            <div class="hd-col-6">
+                <div class="hd-form-group">
+                    <label class="hd-label" for="mobile"><?php esc_html_e('Mobile No.', 'flexcore-server'); ?><span>*</span></label>
+                    <input class="hd-formfild" type="text" id="mobile" name="mobile" required maxlength="8" placeholder="Phone Number" data-mask="mobile">
+                    <small class="form-hint form-error mobile-error" style="display: none;">
+                        <?php esc_html_e('Please enter a valid Singapore mobile number', 'flexcore-server'); ?>
+                    </small>
+                    <div class="field-error mobileNo-error" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="hd-col-6">
                 <div class="hd-form-group">
                     <label class="hd-label" for="postal_code"><?php esc_html_e('Postal Code', 'flexcore-server'); ?><span>*</span></label>
                     <input class="hd-formfild" type="text" id="postal_code" name="postal_code" required maxlength="6" pattern="^\d{6}$" placeholder="Postal Code">
