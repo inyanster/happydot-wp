@@ -467,7 +467,57 @@ if (!defined('ABSPATH')) {
                 <?php esc_html_e('Login here', 'flexcore-server'); ?>
             </a>
         </p>
-</div>
-<div id="register-message" class="flexcore-message" style="display: none;"></div>
 </form>
+<script>
+(function(){
+  var form = document.getElementById('flexcore-merged-registration-form');
+  if(!form) return;
+  // Use setTimeout to ensure all deferred scripts have run
+  var tryAttach = function(){
+    if(typeof MergedRegistration !== 'undefined' && MergedRegistration.handleSubmit){
+      form.removeEventListener('submit', arguments.callee);
+      form.addEventListener('submit', MergedRegistration.handleSubmit.bind(MergedRegistration));
+      console.log('[MR] submit handler attached via inline');
+    }
+  };
+  form.addEventListener('submit', tryAttach);
+  // If script loads after DOM, try immediately too
+  </form>
+  <div id="register-message" class="flexcore-message" style="display: none;"></div>
+  <script>
+  (function(){
+    var form = document.getElementById('flexcore-merged-registration-form');
+    if(!form) return;
+    function attachSubmit() {
+      if(typeof MergedRegistration !== 'undefined' && typeof MergedRegistration.handleSubmit === 'function') {
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          MergedRegistration.handleSubmit(e);
+        });
+      }
+    }
+    function waitForMR() {
+      if(typeof MergedRegistration !== 'undefined' && MergedRegistration.handleSubmit) {
+        attachSubmit();
+      } else {
+        setTimeout(waitForMR, 100);
+      }
+    }
+    waitForMR();
+  })();
+  </script>
+  </div>
+(function(){
+var form = document.getElementById('flexcore-merged-registration-form');
+if(!form) return;
+var tryAttach = function(){
+if(typeof MergedRegistration !== 'undefined' && MergedRegistration.handleSubmit){
+form.removeEventListener('submit', tryAttach);
+form.addEventListener('submit', MergedRegistration.handleSubmit.bind(MergedRegistration));
+}
+};
+form.addEventListener('submit', tryAttach);
+tryAttach();
+})();
+</script>
 </div>

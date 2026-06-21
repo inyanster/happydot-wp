@@ -273,7 +273,7 @@ class FlexCore_Server_Public
                 // );
                 wp_enqueue_script(
                     'flexcore-server-merged-register',
-                    plugin_dir_url(__FILE__) . 'js/modules/mergedRegistration.js',
+                    plugin_dir_url(__FILE__) . 'js/modules/mergedRegistration.js?t=202506101400',
                     array('jquery', 'flexcore-server-public'),
                     FLEXCORE_SERVER_VERSION,
                     true
@@ -281,9 +281,11 @@ class FlexCore_Server_Public
                 wp_add_inline_script(
                     'flexcore-server-merged-register',
                     '(function(){'
-                    . 'document.addEventListener("DOMContentLoaded",function(){'
+                    . 'function initPw(){'
                     . 'var pw=document.getElementById("password");'
-                    . 'if(pw){pw.addEventListener("input",function(){'
+                    . 'if(!pw)return;'
+                    . 'pw.removeEventListener("input",initPw);'
+                    . 'pw.addEventListener("input",function(){'
                     . 'var v=this.value,'
                     . 'lr=document.getElementById("flexcore_length"),ur=document.getElementById("flexcore_uppercase"),'
                     . 'lrr=document.getElementById("flexcore_lowercase"),nr=document.getElementById("flexcore_number"),'
@@ -293,13 +295,21 @@ class FlexCore_Server_Public
                     . 'if(/[a-z]/.test(v))lrr.classList.add("valid");else{lrr.classList.remove("valid");}'
                     . 'if(/\\d/.test(v))nr.classList.add("valid");else{nr.classList.remove("valid");}'
                     . 'if(/[!@#$%^&*()]/.test(v))sr.classList.add("valid");else{sr.classList.remove("valid");}'
-                    . '});}'
+                    . '});'
                     . 'var cp=document.getElementById("confirm_password");'
                     . 'if(cp){cp.addEventListener("input",function(){'
                     . 'var p=document.getElementById("password").value,c=this.value;'
-                    . 'if(c!==p)this.classList.add("has-error");else{this.classList.remove("has-error");}'
+                    . 'if(c!==p)cp.classList.add("has-error");else{cp.classList.remove("has-error");}'
                     . '});}'
-                    . '});'
+                    . '}'
+                    . 'function waitForPw(){'
+                    . 'var pw=document.getElementById("password");'
+                    . 'if(pw){pw.addEventListener("input",initPw);initPw();}'
+                    . 'else{setTimeout(waitForPw,50);}'
+                    . '}'
+                    . 'if(document.readyState==="loading"){'
+                    . 'document.addEventListener("DOMContentLoaded",waitForPw);'
+                    . '}else{waitForPw();}'
                     . '})();',
                     'after'
                 );

@@ -201,9 +201,9 @@ class FlexCore_Server_Ajax_Handler
     {
         check_ajax_referer('flexcore_login', 'nonce');
 
-        $email = sanitize_email($_POST['email']);
-        $password = $_POST['password'];
-        $login_attempts = isset($_POST['login_attempts']) ? intval($_POST['login_attempts']) : 0;
+        $email = sanitize_email($_REQUEST['email']);
+        $password = $_REQUEST['password'];
+        $login_attempts = isset($_REQUEST['login_attempts']) ? intval($_REQUEST['login_attempts']) : 0;
 
         if (empty($email) || empty($password)) {
             wp_send_json_error(array('message' => __('Email and password are required.', 'flexcore-server')));
@@ -233,8 +233,8 @@ class FlexCore_Server_Ajax_Handler
     {
         check_ajax_referer('flexcore_verify_otp', 'nonce');
 
-        $email = sanitize_email($_POST['email']);
-        $otp = sanitize_text_field($_POST['otp']);
+        $email = sanitize_email($_REQUEST['email']);
+        $otp = sanitize_text_field($_REQUEST['otp']);
 
         if (empty($email) || empty($otp)) {
             wp_send_json_error(array('message' => $response['message'] ?? __(' OTP are required.', 'flexcore-server')));
@@ -479,9 +479,9 @@ class FlexCore_Server_Ajax_Handler
     {
         check_ajax_referer('flexcore_reset_password', 'nonce');
 
-        $email = sanitize_email($_POST['email']);
-        $otp = sanitize_text_field($_POST['otp']);
-        $password = $_POST['password'];
+        $email = sanitize_email($_REQUEST['email']);
+        $otp = sanitize_text_field($_REQUEST['otp']);
+        $password = $_REQUEST['password'];
 
         if (empty($email) || empty($otp) || empty($password)) {
             wp_send_json_error(array('message' => __('All fields are required.', 'flexcore-server')));
