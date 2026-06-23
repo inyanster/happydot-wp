@@ -387,6 +387,8 @@ validatePostalCode: function () {
           mobileNumber: value,
           citizenship: $("#citizenship").val(),
           postalCode: $("#postal_code").val(),
+          maritalStatus: $("#marital_status").val() || "",
+          preferredName: $("#preferred_name").val() || "",
           redirect_to_dashboard: true,
         },
         success: function (response) {

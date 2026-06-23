@@ -90,6 +90,7 @@ class FlexCore_Server_Public
         // Only handle our flexcore shortcodes
         $render_methods = array(
             'flexcore_register_myinfo'          => 'render_register_myinfo_form',
+            'flexcore_profile_myinfo'           => 'render_profile_myinfo_form',
             'flexcore_lifestyle_survey_button' => 'render_lifestyle_survey_button_form',
         );
 
@@ -290,7 +291,7 @@ class FlexCore_Server_Public
                     . 'lr=document.getElementById("flexcore_length"),ur=document.getElementById("flexcore_uppercase"),'
                     . 'lrr=document.getElementById("flexcore_lowercase"),nr=document.getElementById("flexcore_number"),'
                     . 'sr=document.getElementById("flexcore_special");'
-                    . 'if(v.length>=12&&v.length<=15)lr.classList.add("valid");else{lr.classList.remove("valid");}'
+                    . 'if(v.length>=8&&v.length<=15)lr.classList.add("valid");else{lr.classList.remove("valid");}'
                     . 'if(/[A-Z]/.test(v))ur.classList.add("valid");else{ur.classList.remove("valid");}'
                     . 'if(/[a-z]/.test(v))lrr.classList.add("valid");else{lrr.classList.remove("valid");}'
                     . 'if(/\\d/.test(v))nr.classList.add("valid");else{nr.classList.remove("valid");}'
@@ -423,7 +424,9 @@ class FlexCore_Server_Public
                 );
             }
 
-            if (has_shortcode($post->post_content, 'flexcore_profile')) {
+            if (has_shortcode($post->post_content, 'flexcore_profile')
+                || has_shortcode($post->post_content, 'flexcore_profile_myinfo')
+            ) {
                 wp_enqueue_script(
                     'flexcore-server-profile',
                     plugin_dir_url(__FILE__) . 'js/modules/profile.js',
@@ -542,6 +545,7 @@ class FlexCore_Server_Public
             "flexcore_avatar" => "render_avatar",
             "flexcore_Complete_ProfileOrSurvey" => "render_Complete_ProfileOrSurvey",
             "flexcore_referfriend" => "render_referfreind_form",
+            "flexcore_profile_myinfo" => "render_profile_myinfo_form",
             "flexcore_rewards" => "render_rewards",
             "flexcore_exclusive_perks" => "render_exclusive_perks",
             "flexcore_rewards_preview" => "render_rewards_preview",
@@ -725,6 +729,18 @@ class FlexCore_Server_Public
         }
 
         return FlexCore_Server_Template_Loader::load_template('profile-form');
+    }
+
+    /**
+     * Render MyInfo profile update form
+     */
+    public function render_profile_myinfo_form($atts)
+    {
+        if (!FlexCore_Server_Session::is_authenticated()) {
+            return $this->handle_unauthorized();
+        }
+
+        return FlexCore_Server_Template_Loader::load_template('profile-myinfo');
     }
 
     /**

@@ -144,6 +144,12 @@ cursor: pointer;}
         </div>
 
         <div class="hd-form-group">
+            <label class="hd-label" for="preferred_name"><?php esc_html_e('Preferred Name', 'flexcore-server'); ?><span style="color:red; font-size:20px; margin-left:2px">*</span></label>
+            <input class="hd-formfild" type="text" id="preferred_name" name="preferred_name" required maxlength="100" placeholder="<?php esc_attr_e('What should we call you?', 'flexcore-server'); ?>">
+            <p class="preferredName-error field-error" style="display: none;"></p>
+        </div>
+
+        <div class="hd-form-group">
             <label class="hd-label" for="dob"><?php esc_html_e('Date of Birth', 'flexcore-server'); ?><span style="color:red; font-size:20px; margin-left:2px">*</span>
                 
             </label>
@@ -232,6 +238,20 @@ cursor: pointer;}
                 <option value="permanentResident"><?php esc_html_e('Permanent Resident', 'flexcore-server'); ?></option>
             </select>
              <p class="citizen-error field-error" style="display: none;"></p>
+        </div>
+
+        <div class="hd-form-group">
+            <label class="hd-label" for="marital_status"><?php esc_html_e('Marital Status', 'flexcore-server'); ?><span style="color:red; font-size:20px; margin-left:2px">*</span></label>
+            <select class="hd-formfild" id="marital_status" name="marital_status" required>
+                <option value=""><?php esc_html_e('Select marital status', 'flexcore-server'); ?></option>
+                <option value="single"><?php esc_html_e('Single', 'flexcore-server'); ?></option>
+                <option value="soontobemarried"><?php esc_html_e('Soon to be Married', 'flexcore-server'); ?></option>
+                <option value="married"><?php esc_html_e('Married', 'flexcore-server'); ?></option>
+                <option value="divorced"><?php esc_html_e('Divorced', 'flexcore-server'); ?></option>
+                <option value="separated"><?php esc_html_e('Separated', 'flexcore-server'); ?></option>
+                <option value="widowed"><?php esc_html_e('Widowed', 'flexcore-server'); ?></option>
+            </select>
+            <p class="maritalStatus-error field-error" style="display: none;"></p>
         </div>
 
         <div class="hd-condition-read">
