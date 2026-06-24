@@ -100,6 +100,7 @@ class FlexCore_Server_Ajax_Handler
         add_action('wp_ajax_flexcore_reset_password', array($this, 'handle_reset_password'));
         add_action('wp_ajax_flexcore_change_password', array($this, 'handle_change_password'));
         add_action('wp_ajax_nopriv_flexcore_change_password', array($this, 'handle_change_password'));
+        add_action('wp_ajax_flexcore_myinfo_unbind', array($this, 'handle_myinfo_unbind'));
         add_action('wp_ajax_flexcore_notification_settings', array($this, 'handle_notification_settings'));
         add_action('wp_ajax_nopriv_flexcore_notification_settings', array($this, 'handle_notification_settings'));
         add_action('wp_ajax_flexcore_change_avatar', array($this, 'handle_avatar'));
@@ -1705,6 +1706,24 @@ function refresh_authToken() {
         'message' => $response['message'] ?? __('Postal code validation completed.', 'flexcore-server'),
         'response' => $response
     ]);
+}
+
+/**
+ * Handle MyInfo unbind from profile
+ */
+public function handle_myinfo_unbind() {
+    $this->verify_ajax_nonce('flexcore_register', 'nonce');
+    if (!FlexCore_Server_Session::is_authenticated()) {
+        wp_send_json_error(['message' => 'You must be logged in.']);
+        return;
+    }
+    $api = new FlexCore_Server_API();
+    $result = $api->myinfo_unbind();
+    if (is_wp_error($result)) {
+        wp_send_json_error(['message' => $result->get_error_message()]);
+    } else {
+        wp_send_json_success($result);
+    }
 }
 
 }
