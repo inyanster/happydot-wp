@@ -5,8 +5,6 @@ console.log('Logout button clicked');
     const logout = {
         init: function() {
             $('.flexcore-logout').on('click', this.handleLogout);
-            // Load profile data when dashboard initializes
-            this.loadProfileData();
         },
         handleLogout: function(e) {
             e.preventDefault();
