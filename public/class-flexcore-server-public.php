@@ -90,7 +90,6 @@ class FlexCore_Server_Public
         // Only handle our flexcore shortcodes
         $render_methods = array(
             'flexcore_register_myinfo'          => 'render_register_myinfo_form',
-            'flexcore_profile_myinfo'           => 'render_profile_myinfo_form',
             'flexcore_lifestyle_survey_button' => 'render_lifestyle_survey_button_form',
         );
 
@@ -183,6 +182,7 @@ class FlexCore_Server_Public
         // Localize the script with new data
         wp_localize_script('flexcore-server-public', 'flexcoreServerAjax', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'token' => FlexCore_Server_Session::get_token() ?? '',
             'nonce' => wp_create_nonce('flexcore-server-nonce'),
             'rewardNonce' => wp_create_nonce('flexcore-reward-nonce'),
             'perksNonce' => wp_create_nonce('flexcore-perks-nonce'),
@@ -424,9 +424,11 @@ class FlexCore_Server_Public
                 );
             }
 
-            if (has_shortcode($post->post_content, 'flexcore_profile')
-                || has_shortcode($post->post_content, 'flexcore_profile_myinfo')
-            ) {
+            // Check post_content AND Elementor data for shortcodes
+            $has_profile_shortcode = has_shortcode($post->post_content, 'flexcore_profile')
+                || has_shortcode_in_elementor($post->ID, 'flexcore_profile');
+
+            if ($has_profile_shortcode) {
                 wp_enqueue_script(
                     'flexcore-server-profile',
                     plugin_dir_url(__FILE__) . 'js/modules/profile.js',
@@ -565,10 +567,8 @@ class FlexCore_Server_Public
             add_shortcode($tag, array($this, $callback));
         }
 
-        // Add debug filter to log shortcode processing
-        if (WP_DEBUG) {
-            add_filter('pre_do_shortcode_tag', array($this, 'override_shortcode_rendering'), 10, 3);
-        }
+        // Override shortcode rendering for our custom shortcodes
+        add_filter('pre_do_shortcode_tag', array($this, 'override_shortcode_rendering'), 10, 3);
     }
 
     /**
@@ -1015,4 +1015,14 @@ public function render_Complete_ProfileOrSurvey($atts)
         }
         return $content;
     }
+}
+
+/**
+ * Check if an Elementor-built page contains a shortcode in its widget data
+ */
+function has_shortcode_in_elementor($post_id, $shortcode) {
+    $elementor_data = get_post_meta($post_id, '_elementor_data', true);
+    if (empty($elementor_data)) return false;
+    return strpos($elementor_data, '[' . $shortcode) !== false
+        || strpos($elementor_data, '"' . $shortcode . '"') !== false;
 }

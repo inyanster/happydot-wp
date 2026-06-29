@@ -32,11 +32,46 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     .hd-form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #333; }
     .hd-formfild { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
     select.hd-formfild { background: #fff; }
+
+    /* MyInfo lightbox — shared with register flow */
+    .myinfo-lightbox {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.6); z-index: 9999;
+        align-items: center; justify-content: center;
+    }
+    .myinfo-lightbox.show { display: flex; }
+    .myinfo-lightbox-content {
+        background: #fff; border-radius: 16px;
+        padding: 40px; max-width: 480px; width: 90%;
+        text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .myinfo-lightbox-icon { font-size: 48px; margin-bottom: 16px; }
+    .myinfo-lightbox h3 { margin: 0 0 12px; font-size: 22px; color: #1a1a1a; }
+    .myinfo-lightbox p { color: #555; line-height: 1.6; margin: 0 0 24px; }
+    .myinfo-lightbox .btn-primary {
+        background: #CA0D07; color: #fff; border: none;
+        border-radius: 8px; padding: 12px 32px;
+        font-size: 16px; font-weight: 600; cursor: pointer;
+    }
 </style>
 
 <input type="hidden" id="myinfo_flow_id" value="<?php echo esc_attr($flow_id); ?>">
 <input type="hidden" id="myinfo_step"    value="<?php echo esc_attr($step); ?>">
 <input type="hidden" id="myinfo_status"  value="<?php echo esc_attr($status); ?>">
+
+<!-- UUID conflict lightbox -->
+<div class="myinfo-lightbox" id="myinfo-conflict-lightbox">
+    <div class="myinfo-lightbox-content">
+        <div class="myinfo-lightbox-icon">⚠️</div>
+        <h3>Singpass Already Linked</h3>
+        <p id="myinfo-conflict-reason">
+            This SingPass ID is already linked to another account. Please contact support.
+        </p>
+        <button class="btn-primary" onclick="document.getElementById('myinfo-conflict-lightbox').classList.remove('show');">
+            OK
+        </button>
+    </div>
+</div>
 
 <div class="singpass-loading" id="singpass-loading">
     <div class="singpass-spinner"></div><p>Redirecting to Singpass...</p>
@@ -151,6 +186,40 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
     var apiBase = 'https://staging.flexcore.theadventus.com/api/v1';
 
+    /**
+     * Pre-fill the MyInfo immutable fields on the form from mapped fields.
+     * Mirrors FlexcoreRegisterMyinfo.applyPrefillData in register-myinfo.php.
+     */
+    function applyMyInfoPrefill(fields) {
+        // Name
+        if (fields.name) $('#name').val(fields.name);
+
+        // DOB (YYYY-MM-DD → DD/MM/YYYY)
+        if (fields.dateOfBirth && /^\d{4}-\d{2}-\d{2}$/.test(fields.dateOfBirth)) {
+            var parts = fields.dateOfBirth.split('-');
+            $('#dob').val(parts[2] + '/' + parts[1] + '/' + parts[0]);
+        }
+
+        // Citizenship
+        var citizenshipMap = { 'SG': 'Singapore Citizen', 'SINGAPORE': 'Singapore Citizen', 'PR': 'Permanent Resident' };
+        $('#citizenship_display').val(citizenshipMap[fields.nationality] || '');
+
+        // Gender
+        var genderMap = { 'M': 'Male', 'F': 'Female', 'male': 'Male', 'female': 'Female' };
+        $('#gender_display').val(genderMap[fields.sex] || fields.sex || '');
+
+        // Race
+        var raceMap = { 'CHINESE': 'Chinese', 'MALAY': 'Malay', 'INDIAN': 'Indian', 'EURASIAN': 'Eurasian', 'OTHERS': 'Others' };
+        var raceDisplay = raceMap[fields.race?.toUpperCase()] || fields.raceRaw || fields.race;
+        $('#race_display').val(raceDisplay);
+
+        // Marital status
+        if (fields.maritalStatus) {
+            var ms = fields.maritalStatus;
+            $('#marital_status_display').val(ms.charAt(0).toUpperCase() + ms.slice(1));
+        }
+    }
+
     function loadProfileData() {
         $.ajax({
             url: flexcoreServerAjax.ajaxUrl,
@@ -161,7 +230,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 var d = res.data, meta = d.metaData || {};
 
                 // Immutable display fields
-                $('#name').val(d.name || '');
+                $('#name').val(d.fullName || d.name || '');
                 if (meta.dateOfBirth) {
                     var parts = meta.dateOfBirth.split('-');
                     $('#dob').val(parts.length === 3 ? parts[2] + '/' + parts[1] + '/' + parts[0] : meta.dateOfBirth);
@@ -187,7 +256,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                     $('#myinfo-promo').hide();
                 } else {
                     $('#btn-unbind-myinfo').hide();
-                    if (meta.singpassPointFlag !== '1') {
+                    if (d.singpassPointFlag !== '1') {
                         $('#myinfo-promo').show();
                     }
                 }
@@ -226,20 +295,33 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         var mobileVal = $('#mobile').val().trim();
         if (mobileVal.startsWith('+65')) mobileVal = mobileVal.substring(3);
 
+        var formData = {
+            action: 'flexcore_update_profile',
+            nonce: flexcoreServerAjax.updateProfileNonce,
+            mobileNumber: mobileVal,
+            postalCode: $('#postal_code').val(),
+            preferredName: $('#preferred_name').val(),
+            redirect_to_dashboard: false
+        };
+
+        // If a MyInfo flow is pending, bind it on save
+        var flowId = $('#myinfo_flow_id').val();
+        if (flowId) {
+            formData.myInfoFlowId = flowId;
+        }
+
         $.ajax({
             url: flexcoreServerAjax.ajaxUrl,
             type: 'POST',
-            data: {
-                action: 'flexcore_update_profile',
-                nonce: flexcoreServerAjax.updateProfileNonce,
-                mobileNumber: mobileVal,
-                postalCode: $('#postal_code').val(),
-                preferredName: $('#preferred_name').val(),
-                redirect_to_dashboard: false
-            },
+            data: formData,
             success: function(res) {
                 if (res.success) {
-                    msg.removeClass('error').addClass('success').html('Profile updated successfully.').show();
+                    // Clear the flowId after successful save so it doesn't re-bind on next edit
+                    $('#myinfo_flow_id').val('');
+                    var pointsMsg = flowId ? ' 50 points awarded!' : '';
+                    msg.removeClass('error').addClass('success').html('Profile updated successfully!' + pointsMsg).show();
+                    // Reload data to reflect MyInfo-linked state
+                    loadProfileData();
                 } else {
                     msg.removeClass('success').addClass('error').html(res.data?.message || 'Update failed').show();
                 }
@@ -251,27 +333,52 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         });
     });
 
-    // MyInfo callback
+    // MyInfo callback — prefill fields (no auto-binding, no points yet)
     function handleMyInfoCallback() {
         var step = $('#myinfo_step').val(), status = $('#myinfo_status').val(), flowId = $('#myinfo_flow_id').val();
         if (step !== 'callback') return;
         $('#btn-retrieve-myinfo').hide();
+
+        // Clear the callback params from the URL so a page reload doesn't re-trigger
+        function cleanReload() {
+            var url = new URL(window.location.href);
+            url.searchParams.delete('step');
+            url.searchParams.delete('status');
+            url.searchParams.delete('flowId');
+            window.location.href = url.toString();
+        }
+
         if (status === 'ineligible') {
             alert('Only Singapore Citizens and Permanent Residents can verify via Singpass MyInfo.');
+            cleanReload();
         } else if (status === 'existing_user') {
             alert('This Singpass is already linked to an existing account. Please contact support.');
+            cleanReload();
         } else if (status === 'new_user' && flowId) {
+            // Fetch prefill data (read-only — no binding yet)
             $.ajax({
-                url: apiBase + '/auth/myinfo/complete-profile',
-                type: 'POST',
-                data: JSON.stringify({ flowId: flowId }),
-                contentType: 'application/json',
-                success: function() {
-                    alert('Profile verified via Singpass MyInfo! 50 points awarded.');
-                    window.location.reload();
+                url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
+                type: 'GET',
+                headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
+                success: function(data) {
+                    if (data.mappedFields) {
+                        applyMyInfoPrefill(data.mappedFields);
+                        $('#myinfo-prefilled-notice').addClass('show');
+                    }
+                    cleanReload();
                 },
                 error: function(xhr) {
-                    alert('MyInfo verification failed: ' + (xhr.responseJSON?.error || 'Unknown error'));
+                    if (xhr.status === 409) {
+                        // UUID conflict — show lightbox
+                        $('#myinfo-conflict-reason').text(
+                            (xhr.responseJSON && xhr.responseJSON.error)
+                            || 'This SingPass ID is already linked to another account. Please contact support.'
+                        );
+                        $('#myinfo-conflict-lightbox').addClass('show');
+                    } else {
+                        alert('MyInfo verification failed.');
+                    }
+                    cleanReload();
                 }
             });
         }

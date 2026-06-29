@@ -681,7 +681,7 @@ public function myinfo_unbind() {
         return new WP_Error('not_authenticated', __('You must be logged in.', 'flexcore-server'));
     }
 
-    $api_url = $this->get_api_base_url() . '/auth/myinfo/unbind';
+    $api_url = trailingslashit($this->api_url) . 'auth/myinfo/unbind';
     $response = wp_remote_post($api_url, [
         'headers' => [
             'Content-Type' => 'application/json',
@@ -699,6 +699,39 @@ public function myinfo_unbind() {
 
     if ($status >= 400) {
         return new WP_Error('unbind_failed', $body['error'] ?? __('Failed to unlink MyInfo.', 'flexcore-server'));
+    }
+
+    return $body;
+}
+
+/**
+ * Complete MyInfo profile update via the Flexcore Node API
+ */
+public function myinfo_complete_profile($flow_id) {
+    $token = FlexCore_Server_Session::get_token();
+    if (!$token) {
+        return new WP_Error('not_authenticated', 'You must be logged in.');
+    }
+
+    $api_url = trailingslashit($this->api_url) . 'auth/myinfo/complete-profile';
+    $response = wp_remote_post($api_url, [
+        'headers' => [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer ' . $token,
+        ],
+        'body' => json_encode(['flowId' => $flow_id]),
+        'timeout' => 30,
+    ]);
+
+    if (is_wp_error($response)) {
+        return $response;
+    }
+
+    $body = json_decode(wp_remote_retrieve_body($response), true);
+    $status = wp_remote_retrieve_response_code($response);
+
+    if ($status >= 400) {
+        return new WP_Error('profile_myinfo_failed', $body['error'] ?? 'MyInfo profile update failed.');
     }
 
     return $body;

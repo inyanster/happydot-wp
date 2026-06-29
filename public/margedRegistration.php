@@ -192,8 +192,8 @@ if (!defined('ABSPATH')) {
                  SECTION 1: MyInfo Fields (top — Singpass greyable)
                  ===================== -->
 
-            <div class="hd-col-12" id="myinfo-section-header" style="display:none;">
-                <div class="form-divider"><span>Info retrieved from MyInfo</span></div>
+            <div class="hd-col-12">
+                <p class="myinfo-section-label">Personal Details (verified via Singpass)</p>
             </div>
 
             <div class="hd-col-12">
@@ -203,6 +203,17 @@ if (!defined('ABSPATH')) {
                     </label>
                     <input class="hd-formfild" type="text" id="name" name="name" required maxlength="100">
                     <div class="field-error name-error" id="error-name"></div>
+                </div>
+            </div>
+
+            <!-- Preferred name — MyInfo / Singpass -->
+            <div class="hd-col-6" id="preferredNameGroup">
+                <div class="hd-form-group">
+                    <label class="hd-label" for="preferred_name">
+                        <?php esc_html_e('Preferred Name', 'flexcore-server'); ?>
+                    </label>
+                    <input class="hd-formfild" type="text" id="preferred_name" name="preferredName" maxlength="100" placeholder="<?php esc_attr_e('Optional — what should we call you?', 'flexcore-server'); ?>">
+                    <div class="field-error preferredName-error" style="display:none;"></div>
                 </div>
             </div>
 
@@ -222,6 +233,42 @@ if (!defined('ABSPATH')) {
                         <?php esc_html_e('Must be 15 years or older', 'flexcore-server'); ?>
                     </small>
                     <div class="field-error dob-error" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="hd-col-6">
+                <div class="hd-form-group">
+                    <label class="hd-label" for="gender"><?php esc_html_e('Gender', 'flexcore-server'); ?><span>*</span></label>
+                    <select class="hd-formfild" id="gender" name="gender" required>
+                        <option value=""><?php esc_html_e('Select gender', 'flexcore-server'); ?></option>
+                        <option value="male"><?php esc_html_e('Male', 'flexcore-server'); ?></option>
+                        <option value="female"><?php esc_html_e('Female', 'flexcore-server'); ?></option>
+                        <option value="others"><?php esc_html_e('Others', 'flexcore-server'); ?></option>
+                    </select>
+                    <div class="field-error gender-error" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="hd-col-6">
+                <div class="hd-form-group">
+                    <label class="hd-label" for="race"><?php esc_html_e('Race', 'flexcore-server'); ?><span>*</span></label>
+                    <select class="hd-formfild" id="race" name="race" required>
+                        <option value=""><?php esc_html_e('Select race', 'flexcore-server'); ?></option>
+                        <option value="chinese"><?php esc_html_e('Chinese', 'flexcore-server'); ?></option>
+                        <option value="malay"><?php esc_html_e('Malay', 'flexcore-server'); ?></option>
+                        <option value="indian"><?php esc_html_e('Indian', 'flexcore-server'); ?></option>
+                        <option value="eurasian"><?php esc_html_e('Eurasian', 'flexcore-server'); ?></option>
+                        <option value="others"><?php esc_html_e('Others', 'flexcore-server'); ?></option>
+                    </select>
+                    <div class="field-error race-error" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="hd-col-12" id="othersRaceGroup">
+                <div class="hd-form-group">
+                    <label class="hd-label" for="othersRace"><?php esc_html_e('Please Specify', 'flexcore-server'); ?><span>*</span></label>
+                    <input class="hd-formfild" type="text" id="others" name="others" value="" maxlength="100">
+                    <div class="field-error race_details-error" style="display: none;"></div>
                 </div>
             </div>
 
@@ -247,19 +294,6 @@ if (!defined('ABSPATH')) {
 
             <div class="hd-col-6">
                 <div class="hd-form-group">
-                    <label class="hd-label" for="gender"><?php esc_html_e('Sex', 'flexcore-server'); ?><span>*</span></label>
-                    <select class="hd-formfild" id="gender" name="gender" required>
-                        <option value=""><?php esc_html_e('Select sex', 'flexcore-server'); ?></option>
-                        <option value="male"><?php esc_html_e('Male', 'flexcore-server'); ?></option>
-                        <option value="female"><?php esc_html_e('Female', 'flexcore-server'); ?></option>
-                        <option value="others"><?php esc_html_e('Others', 'flexcore-server'); ?></option>
-                    </select>
-                    <div class="field-error gender-error" style="display: none;"></div>
-                </div>
-            </div>
-
-            <div class="hd-col-6">
-                <div class="hd-form-group">
                     <label class="hd-label" for="marital_status"><?php esc_html_e('Marital Status', 'flexcore-server'); ?><span>*</span></label>
                     <select class="hd-formfild" id="marital_status" name="maritalStatus" required>
                         <option value=""><?php esc_html_e('Select marital status', 'flexcore-server'); ?></option>
@@ -271,29 +305,6 @@ if (!defined('ABSPATH')) {
                         <option value="widowed"><?php esc_html_e('Widowed', 'flexcore-server'); ?></option>
                     </select>
                     <div class="field-error maritalStatus-error" style="display: none;"></div>
-                </div>
-            </div>
-
-            <div class="hd-col-6">
-                <div class="hd-form-group">
-                    <label class="hd-label" for="race"><?php esc_html_e('Race', 'flexcore-server'); ?><span>*</span></label>
-                    <select class="hd-formfild" id="race" name="race" required>
-                        <option value=""><?php esc_html_e('Select race', 'flexcore-server'); ?></option>
-                        <option value="chinese"><?php esc_html_e('Chinese', 'flexcore-server'); ?></option>
-                        <option value="malay"><?php esc_html_e('Malay', 'flexcore-server'); ?></option>
-                        <option value="indian"><?php esc_html_e('Indian', 'flexcore-server'); ?></option>
-                        <option value="eurasian"><?php esc_html_e('Eurasian', 'flexcore-server'); ?></option>
-                        <option value="others"><?php esc_html_e('Others', 'flexcore-server'); ?></option>
-                    </select>
-                    <div class="field-error race-error" style="display: none;"></div>
-                </div>
-            </div>
-
-            <div class="hd-col-6" id="othersRaceGroup">
-                <div class="hd-form-group">
-                    <label class="hd-label" for="othersRace"><?php esc_html_e('Please Specify', 'flexcore-server'); ?><span>*</span></label>
-                    <input class="hd-formfild" type="text" id="others" name="others" value="" maxlength="100">
-                    <div class="field-error race_details-error" style="display: none;"></div>
                 </div>
             </div>
 
@@ -341,17 +352,6 @@ if (!defined('ABSPATH')) {
                 <div class="form-divider"><span>Account Details</span></div>
             </div>
 
-            <!-- Preferred Name -->
-            <div class="hd-col-12" id="preferredNameGroup">
-                <div class="hd-form-group">
-                    <label class="hd-label" for="preferred_name">
-                        <?php esc_html_e('Preferred Name', 'flexcore-server'); ?><span>*</span>
-                    </label>
-                    <input class="hd-formfild" type="text" id="preferred_name" name="preferredName" required maxlength="100" placeholder="<?php esc_attr_e('What should we call you?', 'flexcore-server'); ?>">
-                    <div class="field-error preferredName-error" style="display:none;"></div>
-                </div>
-            </div>
-
             <div class="hd-col-12">
                 <div class="hd-form-group">
                     <label class="hd-label" for="email"><?php esc_html_e('Email', 'flexcore-server'); ?><span>*</span></label>
@@ -386,27 +386,9 @@ if (!defined('ABSPATH')) {
                     </div>
                     <div class="field-error" id="error-confirm_password"></div>
                 </div>
-            </div>
-
-            <!-- RIGHT col: Password requirements guide box -->
-            <div class="hd-col-6">
-                <div class="hd-signup-info guide-2rows">
-                    <p><?php esc_html_e('Your password must:', 'flexcore-server'); ?></p>
-                    <ol class="flexcore_requiments">
-                        <li id="flexcore_length">Be between 8 - 15 characters in length</li>
-                        <li id="flexcore_uppercase">Contain at least 1 uppercase (capital) letter</li>
-                        <li id="flexcore_lowercase">Contain at least 1 lowercase (small) letter</li>
-                        <li id="flexcore_number">Contain at least 1 number</li>
-                        <li id="flexcore_special">Contain at least 1 special character (!@#$%^&*())</li>
-                    </ol>
-                    <h6 id="h6" class="hd-requirements-matched" style="display: none;"><?php esc_html_e('Password requirement all met!', 'flexcore-server'); ?></h6>
-                </div>
-            </div>
-
-            <div class="hd-col-6">
                 <div class="hd-form-group">
                     <label class="hd-label" for="mobile"><?php esc_html_e('Mobile No.', 'flexcore-server'); ?><span>*</span></label>
-                    <input class="hd-formfild" type="tel" id="mobile" name="mobile" required maxlength="8" pattern="[89][0-9]{7}" placeholder="Phone Number" title="8-digit Singapore mobile number starting with 8 or 9" data-mask="mobile">
+                    <input class="hd-formfild" type="text" id="mobile" name="mobile" required maxlength="8" placeholder="Phone Number" data-mask="mobile">
                     <small class="form-hint form-error mobile-error" style="display: none;">
                         <?php esc_html_e('Please enter a valid Singapore mobile number', 'flexcore-server'); ?>
                     </small>
@@ -415,6 +397,17 @@ if (!defined('ABSPATH')) {
             </div>
 
             <div class="hd-col-6">
+                <div class="hd-signup-info guide-2rows">
+                    <p><?php esc_html_e('Your password must:', 'flexcore-server'); ?></p>
+                    <ol class="flexcore_requiments">
+                        <li id="flexcore_length">Be between 12 - 15 characters in length</li>
+                        <li id="flexcore_uppercase">Contain at least 1 uppercase (capital) letter</li>
+                        <li id="flexcore_lowercase">Contain at least 1 lowercase (small) letter</li>
+                        <li id="flexcore_number">Contain at least 1 number</li>
+                        <li id="flexcore_special">Contain at least 1 special character (!@#$%^&*())</li>
+                    </ol>
+                    <h6 id="h6" class="hd-requirements-matched" style="display: none;"><?php esc_html_e('Password requirement all met!', 'flexcore-server'); ?></h6>
+                </div>
                 <div class="hd-form-group">
                     <label class="hd-label" for="postal_code"><?php esc_html_e('Postal Code', 'flexcore-server'); ?><span>*</span></label>
                     <input class="hd-formfild" type="text" id="postal_code" name="postal_code" required maxlength="6" pattern="^\d{6}$" placeholder="Postal Code">
@@ -457,14 +450,6 @@ if (!defined('ABSPATH')) {
                 <div class="field-error consent-error" style="display: none;"></div>
             </div>
 
-            <div class="hd-condition-read">
-                <input class="hd-checkbox" type="checkbox" id="terms_consent" name="terms_consent" required>
-                <label class="hd-label" for="terms_consent">
-                    I confirm that I have read and understood the <a href="/privacy-policy/" target="_blank" style="color:#1a56db;text-decoration:underline;">Privacy Policy</a> and <a href="/terms-conditions/" target="_blank" style="color:#1a56db;text-decoration:underline;">Terms & Conditions</a>, and I agree to be bound by them. I acknowledge that these may be updated from time to time, and I will refer to the provided links for the most current version.
-                </label>
-                <div class="field-error terms-error" style="display: none;"></div>
-            </div>
-
         </div>
         <div class="hd-form-btn form-submit">
             <button type="submit" class="button button-primary hd-btn" id="submitBtn"><?php esc_html_e('CREATE ACCOUNT', 'flexcore-server'); ?></button>
@@ -475,7 +460,7 @@ if (!defined('ABSPATH')) {
                 <?php esc_html_e('Login here', 'flexcore-server'); ?>
             </a>
         </p>
-</form>
+</div>
 <div id="register-message" class="flexcore-message" style="display: none;"></div>
-</div><!-- close becomehappydotter-wrap -->
-</div><!-- close flexcore-form -->
+</form>
+</div>

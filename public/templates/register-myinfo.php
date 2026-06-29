@@ -177,18 +177,15 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
 <!-- Always-visible registration form -->
 <div id="singpass-form-section">
-    <!-- Retrieve with Singpass button at top of form -->
-    <button type="button" class="singpass-retrieve-btn" id="btn-retrieve-myinfo" onclick="FlexcoreRegisterMyinfo.startMyInfo(); return false;">
-        <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="14" cy="14" r="14" fill="#fff" fill-opacity="0.25"/>
-            <path d="M8 14c0-3.3 2.7-6 6-6s6 2.7 6 6-2.7 6-6 6H8" fill="#fff"/>
-            <circle cx="14" cy="14" r="2" fill="#fff"/>
-            <rect x="12" y="14" width="4" height="6" rx="2" fill="#fff"/>
-        </svg>
-        Retrieve with Singpass MyInfo
-    </button>
-
-    <div class="form-divider"><span>or fill in manually</span></div>
+    <!-- Retrieve with Singpass button + promo text -->
+    <div class="myinfo-top-row" style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
+        <button type="button" id="btn-retrieve-myinfo" onclick="FlexcoreRegisterMyinfo.startMyInfo(); return false;" style="background:none;border:none;padding:0;cursor:pointer;">
+            <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass-button.png'); ?>" alt="Retrieve Myinfo with Singpass" style="height:48px;width:auto;">
+        </button>
+        <span class="myinfo-promo-text" style="color: #1a56db; font-style: italic; font-size: 15px; line-height: 1.5; max-width: 480px;">
+            Get your profile verified by Singpass and be awarded with extra 100 HappyPoints and start doing surveys immediately!
+        </span>
+    </div>
 
     <?php
     // Load the merged registration form
@@ -244,6 +241,8 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 var loginUrl = window.flexcoreServerAjax?.loginUrl || '/flexcore-login';
                 $('#myinfo-login-link').attr('href', loginUrl);
             } else if (status === 'new_user' && flowId) {
+                // Show the MyInfo section header
+                $('#myinfo-section-header').show();
                 // Mark as pre-filled from MyInfo
                 $('#myinfo-prefilled-notice').addClass('show');
                 this.lockMyInfoFields();
@@ -293,8 +292,17 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                         self.applyPrefillData(data.mappedFields);
                     }
                 },
-                error: function() {
-                    console.warn('[FlexcoreRegisterMyinfo] Could not fetch pre-fill data');
+                error: function(xhr) {
+                    if (xhr.status === 409) {
+                        // UUID already linked to another account — show lightbox
+                        $('#myinfo-ineligible-reason').text(
+                            (xhr.responseJSON && xhr.responseJSON.error)
+                            || 'This SingPass ID is already linked to another account. Please contact support.'
+                        );
+                        $('#myinfo-ineligible-lightbox').addClass('show');
+                    } else {
+                        console.warn('[FlexcoreRegisterMyinfo] Could not fetch pre-fill data');
+                    }
                 }
             });
         },
@@ -317,15 +325,17 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                     'CHINESE':   'chinese',
                     'MALAY':     'malay',
                     'INDIAN':    'indian',
-                    'EURASIAN':  'eurasian'
+                    'EURASIAN':  'eurasian',
+                    'OTHERS':    'others'
                 };
                 var mappedRace = raceMap[fields.race.toUpperCase()];
                 if (mappedRace) {
                     setVal('#race', mappedRace);
                 } else {
                     // Not a standard race — set to "Others" and populate the spec field
+                    // with the raw Singpass code (e.g. "EUROPEAN")
                     setVal('#race', 'others');
-                    setVal('#others', fields.race);
+                    setVal('#others', fields.raceRaw || fields.race);
                     // Show the "Please Specify" field since it's now active
                     var othersGroup = document.getElementById('othersRaceGroup');
                     if (othersGroup) othersGroup.style.display = 'block';
@@ -364,10 +374,39 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 if (mappedSex) { setVal('#gender', mappedSex); }
             }
 
+            // Map MyInfo marital status to form values
+            // Backend enum values: single, married, divorced, widowed
+            // Also handle possible uppercase codes (SINGLE, MARRIED, etc.)
+            if (fields.maritalStatus !== undefined && fields.maritalStatus !== null && fields.maritalStatus !== '') {
+                var maritalMap = {
+                    'SINGLE': 'single',
+                    'MARRIED': 'married',
+                    'DIVORCED': 'divorced',
+                    'WIDOWED': 'widowed',
+                    'SEPARATED': 'separated',
+                    'SOONTOBEMARRIED': 'soontobemarried',
+                    'single': 'single',
+                    'married': 'married',
+                    'divorced': 'divorced',
+                    'widowed': 'widowed',
+                    'separated': 'separated',
+                    'soontobemarried': 'soontobemarried',
+                };
+                var mappedMarital = maritalMap[fields.maritalStatus] || maritalMap[fields.maritalStatus.toUpperCase()];
+                if (mappedMarital) {
+                    setVal('#marital_status', mappedMarital);
+                }
+            }
+
             setVal('#name',         fields.name);
-            setVal('#dob',          fields.dateOfBirth);
+            // Convert MyInfo dateOfBirth from YYYY-MM-DD to DD/MM/YYYY
+            if (fields.dateOfBirth && /^\d{4}-\d{2}-\d{2}$/.test(fields.dateOfBirth)) {
+                var parts = fields.dateOfBirth.split('-');
+                setVal('#dob', parts[2] + '/' + parts[1] + '/' + parts[0]);
+            } else {
+                setVal('#dob', fields.dateOfBirth);
+            }
             setVal('#postal_code',  fields.postalCode);
-            setVal('#marital_status', fields.maritalStatus);
 
             if (fields.preferredName) {
                 setVal('#preferred_name', fields.preferredName);

@@ -66,11 +66,6 @@ class FlexCore_Server_Activator {
                 'content' => '[flexcore_my_account]',
                 'option' => 'flexcore_my_account_page'
             ),
-            'flexcore-register-myinfo' => array(
-                'title' => 'Register with Singpass',
-                'content' => '[flexcore_register_myinfo]',
-                'option' => 'flexcore_register_myinfo_page'
-            ),
             
         );
 
