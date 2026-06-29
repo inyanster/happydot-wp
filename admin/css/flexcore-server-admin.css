@@ -1,0 +1,67 @@
+/* FlexCore Server Admin Styles */
+
+.flexcore-server-settings {
+    max-width: 800px;
+    margin: 20px 0;
+}
+
+.flexcore-server-settings .form-table {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.flexcore-server-settings .form-table th {
+    padding: 20px 10px 20px 0;
+}
+
+.flexcore-server-settings .form-table td {
+    padding: 20px 10px;
+}
+
+.flexcore-server-settings input[type="url"],
+.flexcore-server-settings input[type="text"],
+.flexcore-server-settings select {
+    width: 100%;
+    max-width: 400px;
+}
+
+.flexcore-server-settings .description {
+    color: #666;
+    font-style: italic;
+    margin-top: 5px;
+}
+
+.flexcore-server-notice {
+    background: #fff;
+    border-left: 4px solid #00a0d2;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    margin: 5px 0 15px;
+    padding: 1px 12px;
+}
+
+.flexcore-server-notice.error {
+    border-left-color: #dc3232;
+}
+
+.flexcore-server-notice.success {
+    border-left-color: #46b450;
+}
+
+/* Settings page header */
+.flexcore-header {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.flexcore-header h1 {
+    margin: 0;
+    padding: 0;
+    font-size: 24px;
+    font-weight: 400;
+}
