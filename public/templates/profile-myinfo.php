@@ -11,8 +11,6 @@ $status  = isset($_GET['status'])  ? sanitize_text_field($_GET['status'])  : '';
 $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 ?>
 <style>
-    .unbind-btn { background: #666; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-size: 13px; cursor: pointer; margin-left: 12px; }
-    .unbind-btn:hover { background: #444; }
     .myinfo-prefilled-notice { background: #E8F5E9; border: 1px solid #C8E6C9; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #2E7D32; display: none; }
     .myinfo-prefilled-notice.show { display: block; }
     .field-immutable { background: #f0f0f0 !important; color: #666 !important; cursor: not-allowed; border-color: #ddd !important; }
@@ -85,12 +83,11 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         Verify with Singpass today and be awarded with 50 points immediately!
     </div>
 
-    <!-- Singpass + Unbind buttons -->
+    <!-- Singpass button -->
     <div id="myinfo-buttons" style="display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
         <button type="button" id="btn-retrieve-myinfo" style="background:none;border:none;padding:0;cursor:pointer;">
             <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass-button.png'); ?>" alt="Retrieve Myinfo with Singpass" style="height:48px;width:auto;">
         </button>
-        <button type="button" id="btn-unbind-myinfo" class="unbind-btn" style="display:none;">Unlink MyInfo</button>
     </div>
 
     <div class="myinfo-prefilled-notice" id="myinfo-prefilled-notice">
@@ -252,39 +249,13 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 // MyInfo state
                 if (meta.myInfoSubject) {
                     $('#myinfo-prefilled-notice').addClass('show');
-                    $('#btn-unbind-myinfo').show();
                     $('#myinfo-promo').hide();
                 } else {
-                    $('#btn-unbind-myinfo').hide();
-                    if (d.singpassPointFlag !== '1') {
-                        $('#myinfo-promo').show();
-                    }
+                    $('#myinfo-promo').show();
                 }
             }
         });
     }
-
-    // Unbind MyInfo
-    $('#btn-unbind-myinfo').on('click', function() {
-        if (!confirm('Are you sure you want to unlink Singpass MyInfo from your account?')) return;
-        $.ajax({
-            url: flexcoreServerAjax.ajaxUrl,
-            type: 'POST',
-            data: {
-                action: 'flexcore_myinfo_unbind',
-                nonce: flexcoreServerAjax.nonce
-            },
-            success: function() {
-                $('#btn-unbind-myinfo').hide();
-                $('#myinfo-promo').show();
-                $('#myinfo-prefilled-notice').hide();
-                alert('MyInfo unlinked successfully.');
-            },
-            error: function(xhr) {
-                alert('Failed: ' + (xhr.responseJSON?.error || 'Unknown error'));
-            }
-        });
-    });
 
     // Submit
     $('#flexcore-profile-myinfo-form').on('submit', function(e) {
