@@ -257,52 +257,61 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         });
     }
 
-    // Submit
-    $('#flexcore-profile-myinfo-form').on('submit', function(e) {
-        e.preventDefault();
-        var btn = $('#submit-btn'), msg = $('#profile-message');
-        btn.prop('disabled', true); msg.hide();
+    function bindEvents() {
+        // Submit profile update
+        $('#flexcore-profile-myinfo-form').on('submit', function(e) {
+            e.preventDefault();
+            var btn = $('#submit-btn'), msg = $('#profile-message');
+            btn.prop('disabled', true); msg.hide();
 
-        var mobileVal = $('#mobile').val().trim();
-        if (mobileVal.startsWith('+65')) mobileVal = mobileVal.substring(3);
+            var mobileVal = $('#mobile').val().trim();
+            if (mobileVal.startsWith('+65')) mobileVal = mobileVal.substring(3);
 
-        var formData = {
-            action: 'flexcore_update_profile',
-            nonce: flexcoreServerAjax.updateProfileNonce,
-            mobileNumber: mobileVal,
-            postalCode: $('#postal_code').val(),
-            preferredName: $('#preferred_name').val(),
-            redirect_to_dashboard: false
-        };
+            var formData = {
+                action: 'flexcore_update_profile',
+                nonce: flexcoreServerAjax.updateProfileNonce,
+                mobileNumber: mobileVal,
+                postalCode: $('#postal_code').val(),
+                preferredName: $('#preferred_name').val(),
+                redirect_to_dashboard: false
+            };
 
-        // If a MyInfo flow is pending, bind it on save
-        var flowId = $('#myinfo_flow_id').val();
-        if (flowId) {
-            formData.myInfoFlowId = flowId;
-        }
+            // If a MyInfo flow is pending, bind it on save
+            var flowId = $('#myinfo_flow_id').val();
+            if (flowId) {
+                formData.myInfoFlowId = flowId;
+            }
 
-        $.ajax({
-            url: flexcoreServerAjax.ajaxUrl,
-            type: 'POST',
-            data: formData,
-            success: function(res) {
-                if (res.success) {
-                    // Clear the flowId after successful save so it doesn't re-bind on next edit
-                    $('#myinfo_flow_id').val('');
-                    var pointsMsg = flowId ? ' 50 points awarded!' : '';
-                    msg.removeClass('error').addClass('success').html('Profile updated successfully!' + pointsMsg).show();
-                    // Reload data to reflect MyInfo-linked state
-                    loadProfileData();
-                } else {
-                    msg.removeClass('success').addClass('error').html(res.data?.message || 'Update failed').show();
-                }
-            },
-            error: function() {
-                msg.removeClass('success').addClass('error').html('An error occurred.').show();
-            },
-            complete: function() { btn.prop('disabled', false); }
+            $.ajax({
+                url: flexcoreServerAjax.ajaxUrl,
+                type: 'POST',
+                data: formData,
+                success: function(res) {
+                    if (res.success) {
+                        // Clear the flowId after successful save so it doesn't re-bind on next edit
+                        $('#myinfo_flow_id').val('');
+                        var pointsMsg = flowId ? ' 50 points awarded!' : '';
+                        msg.removeClass('error').addClass('success').html('Profile updated successfully!' + pointsMsg).show();
+                        // Reload data to reflect MyInfo-linked state
+                        loadProfileData();
+                    } else {
+                        msg.removeClass('success').addClass('error').html(res.data?.message || 'Update failed').show();
+                    }
+                },
+                error: function() {
+                    msg.removeClass('success').addClass('error').html('An error occurred.').show();
+                },
+                complete: function() { btn.prop('disabled', false); }
+            });
         });
-    });
+
+        // Retrieve with Singpass button
+        $('#btn-retrieve-myinfo').on('click', function() {
+            window.location.href = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.pathname + '?step=callback');
+        });
+    }
+
+    $(function() { bindEvents(); loadProfileData(); handleMyInfoCallback(); });
 
     // MyInfo callback — prefill fields (no auto-binding, no points yet)
     function handleMyInfoCallback() {
@@ -351,11 +360,5 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             });
         }
     }
-
-    $('#btn-retrieve-myinfo').on('click', function() {
-        window.location.href = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.pathname + '?step=callback');
-    });
-
-    $(function() { loadProfileData(); handleMyInfoCallback(); });
 })(jQuery);
 </script>
