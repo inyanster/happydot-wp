@@ -411,7 +411,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
         // Retrieve with Singpass button
         $('#btn-retrieve-myinfo').on('click', function() {
-            window.location.href = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.pathname + '?step=callback');
+            window.location.href = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.origin + window.location.pathname + '?step=callback');
         });
     }
 

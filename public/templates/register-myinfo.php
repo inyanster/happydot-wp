@@ -208,7 +208,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             $('#btn-retrieve-myinfo').hide();
             $('#singpass-loading').addClass('show');
             window.location.href = this.apiBase + '/auth/myinfo/start?returnTo='
-                + encodeURIComponent(window.location.pathname + '?step=callback');
+                + encodeURIComponent(window.location.origin + window.location.pathname + '?step=callback');
         },
 
         closeIneligibleLightbox: function() {
@@ -331,6 +331,33 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 var mappedRace = raceMap[fields.race.toUpperCase()];
                 if (mappedRace) {
                     setVal('#race', mappedRace);
+                    // Show "Please Specify" if race is "others"
+                    if (mappedRace === 'others') {
+                        var othersGroup = document.getElementById('othersRaceGroup');
+                        if (othersGroup) othersGroup.style.display = 'block';
+                        // Map all known Singpass race codes to full names
+                        var raceRawMap = {
+                            'CN': 'CHINESE', 'MY': 'MALAY', 'IN': 'INDIAN',
+                            'EA': 'EURASIAN', 'OT': 'OTHERS', 'OT02': 'OTHERS',
+                            'EU': 'EUROPEAN', 'AR': 'ARAB', 'AF': 'AFRICAN',
+                            'AM': 'ARMENIAN', 'AU': 'AUSTRALIAN', 'BD': 'BANGLADESHI',
+                            'BU': 'BURMESE', 'CA': 'CAUCASIAN', 'CE': 'CEYLONESE',
+                            'FI': 'FILIPINO', 'ID': 'INDONESIAN', 'JP': 'JAPANESE',
+                            'KH': 'KOREAN', 'LA': 'LAOTIAN', 'NE': 'NEPALESE',
+                            'NZ': 'NEW ZEALANDER', 'PA': 'PAKISTANI', 'SI': 'SINHALESE',
+                            'TH': 'THAI', 'VI': 'VIETNAMESE', 'XX': 'OTHERS'
+                        };
+                        var raceDisplay = raceRawMap[fields.raceRaw] || fields.raceRaw || fields.race;
+                        setVal('#others', raceDisplay);
+                        // Lock and grey out
+                        var $othersInput = $('#others');
+                        if ($othersInput.length) {
+                            $othersInput.prop('readonly', true).addClass('myinfo-locked');
+                            $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').remove();
+                            $othersInput.closest('.hd-form-group').append('<div class="myinfo-locked-badge">🔒 Verified via Singpass MyInfo</div>');
+                            $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').addClass('show');
+                        }
+                    }
                 } else {
                     // Not a standard race — set to "Others" and populate the spec field
                     // with the raw Singpass code (e.g. "EUROPEAN")
