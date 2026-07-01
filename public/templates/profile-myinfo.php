@@ -280,6 +280,43 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     }
 
     function bindEvents() {
+        // Live validation — mobile number
+        $('#mobile').on('input change', function() {
+            var val = $(this).val().trim();
+            var clean = val.replace(/\D/g, '');
+            var isValid = false;
+            if (val.startsWith('+')) {
+                isValid = /^\+65[89]\d{7}$/.test(val);
+            } else {
+                isValid = /^[89]\d{7}$/.test(val);
+            }
+            if (isValid) {
+                $(this).removeClass('has-error').addClass('is-valid');
+                $('.mobileNo-error').hide();
+            } else if (val.length > 0) {
+                $(this).addClass('has-error').removeClass('is-valid');
+                $('.mobileNo-error').text('Please enter a valid Singapore mobile number starting with 8 or 9.').show();
+            } else {
+                $(this).removeClass('has-error is-valid');
+                $('.mobileNo-error').hide();
+            }
+        });
+
+        // Live validation — postal code
+        $('#postal_code').on('input', function() {
+            var val = $(this).val().trim();
+            if (!val) {
+                $(this).removeClass('has-error is-valid');
+                $('.postal-error').hide();
+            } else if (!/^\d{6}$/.test(val)) {
+                $(this).addClass('has-error').removeClass('is-valid');
+                $('.postal-error').text('Postal code must be exactly 6 digits.').show();
+            } else {
+                $(this).removeClass('has-error').addClass('is-valid');
+                $('.postal-error').hide();
+            }
+        });
+
         // Submit profile update
         $('#flexcore-profile-myinfo-form').on('submit', function(e) {
             e.preventDefault();
@@ -287,6 +324,24 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             btn.prop('disabled', true); msg.hide();
 
             var mobileVal = $('#mobile').val().trim();
+
+            // Client-side validation
+            var mobileEl = $('#mobile');
+            if (!/^[89]\d{7}$/.test(mobileVal) && !/^\+65[89]\d{7}$/.test(mobileVal)) {
+                mobileEl.addClass('has-error');
+                $('.mobileNo-error').text('Please enter a valid Singapore mobile number starting with 8 or 9.').show();
+                msg.removeClass('success').addClass('error').html('Please fix the errors below.').show();
+                btn.prop('disabled', false);
+                return;
+            }
+            var postalVal = $('#postal_code').val().trim();
+            if (!/^\d{6}$/.test(postalVal)) {
+                $('#postal_code').addClass('has-error');
+                $('.postal-error').text('Postal code must be exactly 6 digits.').show();
+                msg.removeClass('success').addClass('error').html('Please fix the errors below.').show();
+                btn.prop('disabled', false);
+                return;
+            }
             if (mobileVal.startsWith('+65')) mobileVal = mobileVal.substring(3);
 
             var formData = {
