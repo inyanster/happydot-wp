@@ -332,21 +332,17 @@ class FlexCore_Server_Ajax_Handler
         $api = new FlexCore_Server_API();
 
         $data = array(
-            // 'dateOfBirth' => sanitize_text_field($_POST['dateOfBirth']),
-            // 'gender' => sanitize_text_field($_POST['gender']),
-            // 'race' => sanitize_text_field($_POST['race']),
-            // 'raceDetails' => sanitize_text_field($_POST['others']),
-            'postalCode' => sanitize_text_field($_POST['postalCode']),
-            'mobileNumber' => sanitize_text_field($_POST['mobileNumber']),
-            'citizenship' => sanitize_text_field($_POST['citizenship'])
+            'postalCode' => sanitize_text_field($_REQUEST['postalCode']),
+            'mobileNumber' => sanitize_text_field($_REQUEST['mobileNumber']),
+            'citizenship' => sanitize_text_field($_REQUEST['citizenship'])
         );
 
         // Pass MyInfo flow ID if present (binds Singpass UUID on save)
-        if (!empty($_POST['myInfoFlowId'])) {
-            $data['myInfoFlowId'] = sanitize_text_field($_POST['myInfoFlowId']);
+        if (!empty($_REQUEST['myInfoFlowId'])) {
+            $data['myInfoFlowId'] = sanitize_text_field($_REQUEST['myInfoFlowId']);
         }
-        if (!empty($_POST['preferredName'])) {
-            $data['preferredName'] = sanitize_text_field($_POST['preferredName']);
+        if (!empty($_REQUEST['preferredName'])) {
+            $data['preferredName'] = sanitize_text_field($_REQUEST['preferredName']);
         }
 
 
@@ -364,7 +360,7 @@ class FlexCore_Server_Ajax_Handler
                 FlexCore_Server_Session::set_user_profile($response['data']);
             }
 
-            $redirect = isset($_POST['redirect_to_dashboard']) && $_POST['redirect_to_dashboard'] ?
+            $redirect = isset($_REQUEST['redirect_to_dashboard']) && $_REQUEST['redirect_to_dashboard'] ?
                 get_permalink(get_option('flexcore_dashboard_page')) : '';
 
             wp_send_json_success(array(
