@@ -249,7 +249,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 var d = res.data, meta = d.metaData || {};
 
                 // Immutable display fields
-                $('#name').val(d.fullName || d.name || '');
+                $('#name').val(d.fullName || '');
                 if (meta.dateOfBirth) {
                     var parts = meta.dateOfBirth.split('-');
                     $('#dob').val(parts.length === 3 ? parts[2] + '/' + parts[1] + '/' + parts[0] : meta.dateOfBirth);
