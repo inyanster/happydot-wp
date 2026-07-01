@@ -334,8 +334,12 @@ class FlexCore_Server_Ajax_Handler
         $data = array(
             'postalCode' => sanitize_text_field($_REQUEST['postalCode']),
             'mobileNumber' => sanitize_text_field($_REQUEST['mobileNumber']),
-            'citizenship' => sanitize_text_field($_REQUEST['citizenship'])
         );
+
+        // Optional fields — only include if provided (MyInfo-bound users can't change these)
+        if (!empty($_REQUEST['citizenship'])) {
+            $data['citizenship'] = sanitize_text_field($_REQUEST['citizenship']);
+        }
 
         // Pass MyInfo flow ID if present (binds Singpass UUID on save)
         if (!empty($_REQUEST['myInfoFlowId'])) {
