@@ -208,7 +208,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             $('#btn-retrieve-myinfo').hide();
             $('#singpass-loading').addClass('show');
             window.location.href = this.apiBase + '/auth/myinfo/start?returnTo='
-                + encodeURIComponent(window.location.origin + window.location.pathname + '?step=callback');
+                + encodeURIComponent(window.location.pathname + '?step=callback');
         },
 
         closeIneligibleLightbox: function() {
