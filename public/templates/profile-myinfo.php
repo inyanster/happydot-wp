@@ -417,52 +417,18 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
     $(function() { bindEvents(); loadProfileData(); handleMyInfoCallback(); });
 
-    // MyInfo callback — prefill fields (no auto-binding, no points yet)
+    // MyInfo callback — strip params immediately, data comes from loadProfileData
     function handleMyInfoCallback() {
         var step = $('#myinfo_step').val(), status = $('#myinfo_status').val(), flowId = $('#myinfo_flow_id').val();
         if (step !== 'callback') return;
         $('#btn-retrieve-myinfo').hide();
 
-        // Clear the callback params from the URL so a page reload doesn't re-trigger
-        function cleanReload() {
-            var url = new URL(window.location.href);
-            url.searchParams.delete('step');
-            url.searchParams.delete('status');
-            url.searchParams.delete('flowId');
-            window.location.href = url.toString();
-        }
-
-        if (status === 'ineligible') {
-            alert('Only Singapore Citizens and Permanent Residents can verify via Singpass MyInfo.');
-            cleanReload();
-        } else if ((status === 'existing_user' || status === 'new_user') && flowId) {
-            // Try prefill — backend allows same-user-same-UUID, blocks different-user conflict
-            $.ajax({
-                url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
-                type: 'GET',
-                headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
-                success: function(data) {
-                    if (data.mappedFields) {
-                        applyMyInfoPrefill(data.mappedFields);
-                        $('#myinfo-prefilled-notice').addClass('show');
-                    }
-                    cleanReload();
-                },
-                error: function(xhr) {
-                    if (xhr.status === 409) {
-                        // UUID conflict — show lightbox
-                        $('#myinfo-conflict-reason').text(
-                            (xhr.responseJSON && xhr.responseJSON.error)
-                            || 'This SingPass ID is already linked to another account. Please contact support.'
-                        );
-                        $('#myinfo-conflict-lightbox').addClass('show');
-                    } else {
-                        alert('MyInfo verification failed.');
-                    }
-                    cleanReload();
-                }
-            });
-        }
+        // Just strip callback params and reload — profile data is already loaded from DB.
+        // The flowId is kept in the hidden field so Save can bind it if needed.
+        var url = new URL(window.location.href);
+        url.searchParams.delete('step');
+        url.searchParams.delete('status');
+        window.history.replaceState({}, '', url.toString());
     }
 })(jQuery);
 </script>
