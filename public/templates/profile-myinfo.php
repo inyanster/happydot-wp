@@ -288,18 +288,20 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 data: formData,
                 success: function(res) {
                     if (res.success) {
-                        // Clear the flowId after successful save so it doesn't re-bind on next edit
                         $('#myinfo_flow_id').val('');
                         var pointsMsg = flowId ? ' 50 points awarded!' : '';
-                        msg.removeClass('error').addClass('success').html('Profile updated successfully!' + pointsMsg).show();
-                        // Reload data to reflect MyInfo-linked state
+                        var msgText = 'Profile updated successfully!' + pointsMsg;
+                        msg.removeClass('error').addClass('success').html(msgText).show();
                         loadProfileData();
                     } else {
-                        msg.removeClass('success').addClass('error').html(res.data?.message || 'Update failed').show();
+                        var errMsg = (res.data && res.data.message) || (res.data && res.data.details) || 'Update failed';
+                        msg.removeClass('success').addClass('error').html(errMsg).show();
                     }
                 },
-                error: function() {
-                    msg.removeClass('success').addClass('error').html('An error occurred.').show();
+                error: function(xhr) {
+                    var errText = 'An error occurred.';
+                    try { var r = JSON.parse(xhr.responseText); if (r.data && r.data.message) errText = r.data.message; } catch(e) {}
+                    msg.removeClass('success').addClass('error').html(errText).show();
                 },
                 complete: function() { btn.prop('disabled', false); }
             });
