@@ -119,7 +119,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     <div class="form-divider"><span>Info retrieved from MyInfo</span></div>
 
     <form id="flexcore-profile-myinfo-form" novalidate>
-        <input type="hidden" id="profile_nonce" value="<?php echo wp_create_nonce('flexcore_register'); ?>">
+        <input type="hidden" id="register_nonce" value="<?php echo wp_create_nonce('flexcore_register'); ?>">
 
         <!-- IMMUTABLE: Full Name -->
         <div class="hd-form-group">
@@ -302,7 +302,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             }
         });
 
-        // Live validation — postal code
+        // Live validation — postal code (format + API)
         $('#postal_code').on('input', function() {
             var val = $(this).val().trim();
             if (!val) {
@@ -312,8 +312,33 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 $(this).addClass('has-error').removeClass('is-valid');
                 $('.postal-error').text('Postal code must be exactly 6 digits.').show();
             } else {
-                $(this).removeClass('has-error').addClass('is-valid');
-                $('.postal-error').hide();
+                // Validate via OneMap API
+                var el = $(this);
+                var postal5D = val.substring(0, 5);
+                $.ajax({
+                    url: flexcoreServerAjax.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'flexcore_postalcode_validation',
+                        register_nonce: $('#register_nonce').val(),
+                        postal_code: postal5D
+                    },
+                    success: function(result) {
+                        if (result.data && result.data.response && result.data.response.found > 0
+                            && result.data.response.results[0].POSTAL !== 'NIL') {
+                            el.removeClass('has-error').addClass('is-valid');
+                            $('.postal-error').hide();
+                        } else {
+                            el.addClass('has-error').removeClass('is-valid');
+                            $('.postal-error').text('Invalid postal code. Please enter a valid postal code.').show();
+                        }
+                    },
+                    error: function() {
+                        // API unavailable — allow format-only validation to pass
+                        el.removeClass('has-error').addClass('is-valid');
+                        $('.postal-error').hide();
+                    }
+                });
             }
         });
 
