@@ -51,6 +51,28 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         border-radius: 8px; padding: 12px 32px;
         font-size: 16px; font-weight: 600; cursor: pointer;
     }
+
+    /* Message styles — match signup form */
+    .flexcore-message {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-top: 16px;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .flexcore-message.success {
+        background-color: #e6f9ec;
+        color: #256029;
+        border: 1px solid #8dd9a2;
+        box-shadow: 0 0 6px rgba(0, 128, 0, 0.1);
+    }
+    .flexcore-message.error {
+        background-color: #ffe6e6;
+        color: #8b0000;
+        border: 1px solid #ffaaaa;
+        box-shadow: 0 0 6px rgba(255, 0, 0, 0.1);
+    }
 </style>
 
 <input type="hidden" id="myinfo_flow_id" value="<?php echo esc_attr($flow_id); ?>">
@@ -173,8 +195,8 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             <button type="submit" class="button button-primary hd-btn" id="submit-btn">Save</button>
         </div>
 
-        <div id="profile-message" class="flexcore-message" style="display:none;"></div>
     </form>
+    <div id="profile-message" class="flexcore-message" style="display:none;"></div>
 </div>
 
 <script>
