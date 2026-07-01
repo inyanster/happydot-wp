@@ -322,11 +322,8 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         if (status === 'ineligible') {
             alert('Only Singapore Citizens and Permanent Residents can verify via Singpass MyInfo.');
             cleanReload();
-        } else if (status === 'existing_user') {
-            alert('This Singpass is already linked to an existing account. Please contact support.');
-            cleanReload();
-        } else if (status === 'new_user' && flowId) {
-            // Fetch prefill data (read-only — no binding yet)
+        } else if ((status === 'existing_user' || status === 'new_user') && flowId) {
+            // Try prefill — backend allows same-user-same-UUID, blocks different-user conflict
             $.ajax({
                 url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
                 type: 'GET',
