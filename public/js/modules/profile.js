@@ -3,6 +3,8 @@
 
   const Profile = {
     init: function () {
+      // Skip if MyInfo profile form exists on this page — it has its own JS
+      if ($("#flexcore-profile-myinfo-form").length) return;
       this.loadProfileData();
       const form = $("#flexcore-profile-form");
 
