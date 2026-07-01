@@ -268,12 +268,16 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 $('#postal_code').val(meta.postalCode || '');
                 $('#preferred_name').val(meta.preferredName || '');
 
-                // MyInfo state
+                // MyInfo verified notice — show if user has Singpass UUID
                 if (meta.myInfoSubject) {
                     $('#myinfo-prefilled-notice').addClass('show');
-                    $('#myinfo-promo').hide();
-                } else {
+                }
+
+                // Promo message — show if point flag is 2 or null
+                if (d.singpassPointFlag === '2' || !d.singpassPointFlag) {
                     $('#myinfo-promo').show();
+                } else {
+                    $('#myinfo-promo').hide();
                 }
             }
         });
