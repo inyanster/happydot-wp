@@ -421,18 +421,6 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
     $(function() { bindEvents(); loadProfileData(); handleMyInfoCallback(); });
 
-    // MyInfo callback — strip params immediately, data comes from loadProfileData
-    function handleMyInfoCallback() {
-        var step = $('#myinfo_step').val(), status = $('#myinfo_status').val(), flowId = $('#myinfo_flow_id').val();
-        if (step !== 'callback') return;
-        $('#btn-retrieve-myinfo').hide();
-
-        // Just strip callback params and reload — profile data is already loaded from DB.
-        // The flowId is kept in the hidden field so Save can bind it if needed.
-        var url = new URL(window.location.href);
-        url.searchParams.delete('step');
-        url.searchParams.delete('status');
-        window.history.replaceState({}, '', url.toString());
-    }
+    // MyInfo callback — handle ineligible / existing_user / new_user statuses\n    function handleMyInfoCallback() {\n        var step = $('#myinfo_step').val(), status = $('#myinfo_status').val(), flowId = $('#myinfo_flow_id').val();\n        if (step !== 'callback') return;\n        $('#btn-retrieve-myinfo').hide();\n\n        if (status === 'ineligible') {\n            $('#myinfo-conflict-reason').text('This Singpass is not eligible for HappyDot.sg. Only Singapore Citizens and Permanent Residents can participate.');\n            $('#myinfo-conflict-lightbox').addClass('show');\n        } else if (status === 'existing_user') {\n            $('#myinfo-conflict-reason').text('This SingPass ID is already linked to a different Happydot account. Please contact support if you believe this is an error.');\n            $('#myinfo-conflict-lightbox').addClass('show');\n        } else if (status === 'new_user' && flowId) {\n            // Fetch MyInfo pre-fill data and populate locked fields\n            $.ajax({\n                url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),\n                method: 'GET',\n                headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },\n                success: function(data) {\n                    if (data.mappedFields) {\n                        applyMyInfoPrefill(data.mappedFields);\n                        $('#myinfo-prefilled-notice').addClass('show');\n                    }\n                },\n                error: function(xhr) {\n                    if (xhr.status === 409) {\n                        $('#myinfo-conflict-reason').text(\n                            (xhr.responseJSON && xhr.responseJSON.error) ||\n                            'This SingPass ID is already linked to another account. Please contact support.'\n                        );\n                        $('#myinfo-conflict-lightbox').addClass('show');\n                    }\n                }\n            });\n        }\n\n        // Strip callback params from URL\n        var url = new URL(window.location.href);\n        url.searchParams.delete('step');\n        url.searchParams.delete('status');\n        window.history.replaceState({}, '', url.toString());\n    }
 })(jQuery);
 </script>
