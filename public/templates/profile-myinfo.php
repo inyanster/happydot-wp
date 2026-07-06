@@ -101,7 +101,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
     <!-- Promo message (hidden by default, shown if singpassPointFlag !== '1') -->
     <div id="myinfo-promo" style="display:none; background:#FFF3CD; border:1px solid #FFECB5; border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#856404; font-size:14px;">
-        Verify with Singpass today and be awarded with 50 points immediately!
+        <span id="myinfo-promo-text">Verify with Singpass today and be awarded with 50 points immediately!</span>
     </div>
 
     <!-- Singpass button -->
@@ -437,6 +437,12 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             $('#myinfo-conflict-lightbox').addClass('show');
         }
 
+        function onMyInfoPulled() {
+            // Points awarded on form SAVE, not on MyInfo pull
+            $('#myinfo-promo-text').text('Save your profile and be awarded with 50 points immediately!');
+            $('#myinfo-promo').show();
+        }
+
         if (status === 'ineligible') {
             showConflict('Not Eligible', 'This Singpass is not eligible for HappyDot.sg. Only Singapore Citizens and Permanent Residents can participate.');
         } else if (status === 'existing_user') {
@@ -454,6 +460,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                             if (data.mappedFields) {
                                 applyMyInfoPrefill(data.mappedFields);
                                 $('#myinfo-prefilled-notice').addClass('show');
+                                onMyInfoPulled();
                             }
                         }
                     });
@@ -478,6 +485,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                         }
                         applyMyInfoPrefill(data.mappedFields);
                         $('#myinfo-prefilled-notice').addClass('show');
+                        onMyInfoPulled();
                     }
                 },
                 error: function(xhr) {
