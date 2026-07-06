@@ -450,7 +450,9 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             var pulledSubject = $('#myinfo_subject').val();
             if (pulledSubject && _profileMeta && _profileMeta.myInfoSubject &&
                 pulledSubject === _profileMeta.myInfoSubject) {
-                // Same Singpass — refresh data via prefill
+                // Same Singpass — update promo text immediately
+                onMyInfoPulled();
+                // Refresh data via prefill
                 if (flowId) {
                     $.ajax({
                         url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
@@ -460,7 +462,6 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                             if (data.mappedFields) {
                                 applyMyInfoPrefill(data.mappedFields);
                                 $('#myinfo-prefilled-notice').addClass('show');
-                                onMyInfoPulled();
                             }
                         }
                     });
