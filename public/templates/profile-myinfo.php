@@ -439,34 +439,36 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             $('#myinfo-conflict-reason').text('This SingPass ID is already linked to a different Happydot account. Please contact support if you believe this is an error.');
             $('#myinfo-conflict-lightbox').addClass('show');
         } else if (status === 'new_user' && flowId) {
-            // If user already has a MyInfo UUID bound, this new Singpass doesn't match.
-            // Show conflict instead of flashing someone else's data on the form.
-            if (_profileMeta && _profileMeta.myInfoSubject) {
-                $('#myinfo-conflict-reason').text('Your account is already linked to a SingPass ID. Please unbind first before linking a different one.');
-                $('#myinfo-conflict-lightbox').addClass('show');
-            } else {
-                // No existing MyInfo binding — safe to pre-fill
-                $.ajax({
-                    url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
-                    method: 'GET',
-                    headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
-                    success: function(data) {
-                        if (data.mappedFields) {
-                            applyMyInfoPrefill(data.mappedFields);
-                            $('#myinfo-prefilled-notice').addClass('show');
-                        }
-                    },
-                    error: function(xhr) {
-                        if (xhr.status === 409) {
+            // Fetch prefill data first, then check if it matches existing binding
+            $.ajax({
+                url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
+                success: function(data) {
+                    if (data.mappedFields) {
+                        // If user already has a MyInfo UUID and this Singpass is different → conflict
+                        if (_profileMeta && _profileMeta.myInfoSubject &&
+                            data.mappedFields.myInfoSubject !== _profileMeta.myInfoSubject) {
                             $('#myinfo-conflict-reason').text(
-                                (xhr.responseJSON && xhr.responseJSON.error) ||
-                                'This SingPass ID is already linked to another account. Please contact support.'
+                                'This SingPass does not match the one linked to your account. Please unbind first before linking a different one.'
                             );
                             $('#myinfo-conflict-lightbox').addClass('show');
+                            return;
                         }
+                        applyMyInfoPrefill(data.mappedFields);
+                        $('#myinfo-prefilled-notice').addClass('show');
                     }
-                });
-            }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 409) {
+                        $('#myinfo-conflict-reason').text(
+                            (xhr.responseJSON && xhr.responseJSON.error) ||
+                            'This SingPass ID is already linked to another account. Please contact support.'
+                        );
+                        $('#myinfo-conflict-lightbox').addClass('show');
+                    }
+                }
+            });
         }
 
         // Strip callback params from URL
