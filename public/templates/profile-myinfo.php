@@ -421,14 +421,43 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
     $(function() { bindEvents(); loadProfileData(); handleMyInfoCallback(); });
 
-    // MyInfo callback — strip params immediately, data comes from loadProfileData
+    // MyInfo callback — handle ineligible / existing_user / new_user statuses
     function handleMyInfoCallback() {
         var step = $('#myinfo_step').val(), status = $('#myinfo_status').val(), flowId = $('#myinfo_flow_id').val();
         if (step !== 'callback') return;
         $('#btn-retrieve-myinfo').hide();
 
-        // Just strip callback params and reload — profile data is already loaded from DB.
-        // The flowId is kept in the hidden field so Save can bind it if needed.
+        if (status === 'ineligible') {
+            $('#myinfo-conflict-reason').text('This Singpass is not eligible for HappyDot.sg. Only Singapore Citizens and Permanent Residents can participate.');
+            $('#myinfo-conflict-lightbox').addClass('show');
+        } else if (status === 'existing_user') {
+            $('#myinfo-conflict-reason').text('This SingPass ID is already linked to a different Happydot account. Please contact support if you believe this is an error.');
+            $('#myinfo-conflict-lightbox').addClass('show');
+        } else if (status === 'new_user' && flowId) {
+            // Fetch MyInfo pre-fill data and populate locked fields
+            $.ajax({
+                url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
+                success: function(data) {
+                    if (data.mappedFields) {
+                        applyMyInfoPrefill(data.mappedFields);
+                        $('#myinfo-prefilled-notice').addClass('show');
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 409) {
+                        $('#myinfo-conflict-reason').text(
+                            (xhr.responseJSON && xhr.responseJSON.error) ||
+                            'This SingPass ID is already linked to another account. Please contact support.'
+                        );
+                        $('#myinfo-conflict-lightbox').addClass('show');
+                    }
+                }
+            });
+        }
+
+        // Strip callback params from URL
         var url = new URL(window.location.href);
         url.searchParams.delete('step');
         url.searchParams.delete('status');
