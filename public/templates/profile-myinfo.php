@@ -462,6 +462,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                             'This SingPass ID is already linked to an existing Happydot account.');
                     }
                 });
+            }
         } else if (status === 'new_user' && flowId) {
             // Fetch prefill data first, then check if it matches existing binding
             $.ajax({
