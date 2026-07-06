@@ -439,7 +439,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 
         function onMyInfoPulled() {
             // Points awarded on form SAVE, not on MyInfo pull
-            $('#myinfo-promo-text').text('Save your profile and be awarded with 50 points immediately!');
+            $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your 50 points.');
             $('#myinfo-promo').show();
         }
 
