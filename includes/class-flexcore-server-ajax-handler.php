@@ -1176,7 +1176,7 @@ class FlexCore_Server_Ajax_Handler
 
 
         // Check nonce presence
-        if (!isset($_POST['register_nonce'])) {
+        if (!isset($_REQUEST['register_nonce'])) {
             error_log("Registration error: nonce missing in POST data.");
             wp_send_json_error(array(
                 'message' => __('Security check failed: nonce is missing.', 'flexcore-server'),
@@ -1186,7 +1186,7 @@ class FlexCore_Server_Ajax_Handler
         }
 
         // Verify nonce
-        if (!wp_verify_nonce($_POST['register_nonce'], 'flexcore_register')) {
+        if (!wp_verify_nonce($_REQUEST['register_nonce'], 'flexcore_register')) {
             error_log("Registration error: nonce verification failed.");
             wp_send_json_error(array(
                 'message' => __('Security check failed: nonce verification failed.', 'flexcore-server'),
@@ -1196,13 +1196,13 @@ class FlexCore_Server_Ajax_Handler
         }
 
         // Sanitize inputs
-        $email          = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
-        $name           = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
-        $password       = isset($_POST['password']) ? $_POST['password'] : '';
-        $referral_code  = isset($_POST['referral_code']) ? sanitize_text_field($_POST['referral_code']) : '';
-        $utm_string     = isset($_POST['utm_string']) ? sanitize_text_field($_POST['utm_string']) : '';
-        $campaign_id    = isset($_POST['campaign_id']) ? sanitize_text_field($_POST['campaign_id']) : '';
-        $register_source = isset($_POST['register_source']) ? sanitize_text_field($_POST['register_source']) : '';
+        $email          = isset($_REQUEST['email']) ? sanitize_email($_REQUEST['email']) : '';
+        $name           = isset($_REQUEST['name']) ? sanitize_text_field($_REQUEST['name']) : '';
+        $password       = isset($_REQUEST['password']) ? $_REQUEST['password'] : '';
+        $referral_code  = isset($_REQUEST['referral_code']) ? sanitize_text_field($_REQUEST['referral_code']) : '';
+        $utm_string     = isset($_REQUEST['utm_string']) ? sanitize_text_field($_REQUEST['utm_string']) : '';
+        $campaign_id    = isset($_REQUEST['campaign_id']) ? sanitize_text_field($_REQUEST['campaign_id']) : '';
+        $register_source = isset($_REQUEST['register_source']) ? sanitize_text_field($_REQUEST['register_source']) : '';
 
         // Validate required fields
         if (empty($email) || empty($name) || empty($password)) {
@@ -1414,7 +1414,7 @@ class FlexCore_Server_Ajax_Handler
     public function handle_marged_register()
     {
         // Check nonce presence
-        if (!isset($_POST['register_nonce'])) {
+        if (!isset($_REQUEST['register_nonce'])) {
             error_log("Registration error: nonce missing in POST data.");
             wp_send_json_error(array(
                 'message' => __('Security check failed: nonce is missing.', 'flexcore-server'),
@@ -1424,7 +1424,7 @@ class FlexCore_Server_Ajax_Handler
         }
 
         // Verify nonce
-        if (!wp_verify_nonce($_POST['register_nonce'], 'flexcore_register')) {
+        if (!wp_verify_nonce($_REQUEST['register_nonce'], 'flexcore_register')) {
             error_log("Registration error: nonce verification failed.");
             wp_send_json_error(array(
                 'message' => __('Security check failed: nonce verification failed.', 'flexcore-server'),
@@ -1434,26 +1434,26 @@ class FlexCore_Server_Ajax_Handler
         }
 
         // Sanitize inputs
-        $fullName       = isset($_POST['name']) ? sanitize_text_field($_POST['name']) : '';
-        $email          = isset($_POST['email']) ? sanitize_email($_POST['email']) : '';
-        $password       = isset($_POST['password']) ? $_POST['password'] : '';
-        $referralCode   = isset($_POST['referral_code']) ? sanitize_text_field($_POST['referral_code']) : '';
-        $utmString      = isset($_POST['utm_string']) ? sanitize_text_field($_POST['utm_string']) : '';
-        $campaignId     = isset($_POST['campaign_id']) ? sanitize_text_field($_POST['campaign_id']) : '';
-        $source         = isset($_POST['register_source']) ? sanitize_text_field($_POST['register_source']) : '';
-        $gender         = isset($_POST['gender']) ? sanitize_text_field($_POST['gender']) : '';
-        $race           = isset($_POST['race']) ? sanitize_text_field($_POST['race']) : '';
+        $fullName       = isset($_REQUEST['name']) ? sanitize_text_field($_REQUEST['name']) : '';
+        $email          = isset($_REQUEST['email']) ? sanitize_email($_REQUEST['email']) : '';
+        $password       = isset($_REQUEST['password']) ? $_REQUEST['password'] : '';
+        $referralCode   = isset($_REQUEST['referral_code']) ? sanitize_text_field($_REQUEST['referral_code']) : '';
+        $utmString      = isset($_REQUEST['utm_string']) ? sanitize_text_field($_REQUEST['utm_string']) : '';
+        $campaignId     = isset($_REQUEST['campaign_id']) ? sanitize_text_field($_REQUEST['campaign_id']) : '';
+        $source         = isset($_REQUEST['register_source']) ? sanitize_text_field($_REQUEST['register_source']) : '';
+        $gender         = isset($_REQUEST['gender']) ? sanitize_text_field($_REQUEST['gender']) : '';
+        $race           = isset($_REQUEST['race']) ? sanitize_text_field($_REQUEST['race']) : '';
         
 
-        $dateOfBirth    = isset($_POST['dob']) ? sanitize_text_field($_POST['dob']) : '';
-        $mobileNumber   = isset($_POST['mobile']) ? sanitize_text_field($_POST['mobile']) : '';
-        $citizenship    = isset($_POST['citizenship']) ? sanitize_text_field($_POST['citizenship']) : '';
-        $postalCode     = isset($_POST['postal_code']) ? sanitize_text_field($_POST['postal_code']) : '';
-        $raceDetails    = isset($_POST['others']) ? sanitize_text_field($_POST['others']) : '';
-        $preferredName  = isset($_POST['preferredName']) ? sanitize_text_field($_POST['preferredName']) : '';
-        $maritalStatus = isset($_POST['maritalStatus']) ? sanitize_text_field($_POST['maritalStatus']) : '';
-        $flowId        = isset($_POST['flowId']) ? sanitize_text_field($_POST['flowId']) : '';
-        $singPass      = isset($_POST['singPass']) && ($_POST['singPass'] === 'true' || $_POST['singPass'] === true || $_POST['singPass'] === '1') ? true : false;
+        $dateOfBirth    = isset($_REQUEST['dob']) ? sanitize_text_field($_REQUEST['dob']) : '';
+        $mobileNumber   = isset($_REQUEST['mobile']) ? sanitize_text_field($_REQUEST['mobile']) : '';
+        $citizenship    = isset($_REQUEST['citizenship']) ? sanitize_text_field($_REQUEST['citizenship']) : '';
+        $postalCode     = isset($_REQUEST['postal_code']) ? sanitize_text_field($_REQUEST['postal_code']) : '';
+        $raceDetails    = isset($_REQUEST['others']) ? sanitize_text_field($_REQUEST['others']) : '';
+        $preferredName  = isset($_REQUEST['preferredName']) ? sanitize_text_field($_REQUEST['preferredName']) : '';
+        $maritalStatus = isset($_REQUEST['maritalStatus']) ? sanitize_text_field($_REQUEST['maritalStatus']) : '';
+        $flowId        = isset($_REQUEST['flowId']) ? sanitize_text_field($_REQUEST['flowId']) : '';
+        $singPass      = isset($_REQUEST['singPass']) && ($_REQUEST['singPass'] === 'true' || $_REQUEST['singPass'] === '1') ? true : false;
 
         // Only Singapore Citizens and Permanent Residents can register
         $allowedCitizenship = ['singaporecitizen', 'permanentResident'];
