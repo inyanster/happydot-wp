@@ -439,15 +439,9 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         if (status === 'ineligible') {
             showConflict('Not Eligible', 'This Singpass is not eligible for HappyDot.sg. Only Singapore Citizens and Permanent Residents can participate.');
         } else if (status === 'existing_user') {
-            // existing_user redirect doesn't include flowId (only new_user does).
-            // We can't call prefill to check same vs different without it.
-            // If the user already has a MyInfo binding, this Singpass belongs to
-            // someone else — show conflict.
-            if (_profileMeta && _profileMeta.myInfoSubject) {
-                showConflict('Singpass Already Linked',
-                    'This SingPass ID is already linked to a different Happydot account. Please contact support if you believe this is an error.');
-            } else if (flowId) {
-                // flowId present (future-proof): call prefill to check same vs different
+            // existing_user redirect now includes flowId (backend fix).
+            // If flowId present, call prefill to check same vs different user.
+            if (flowId) {
                 $.ajax({
                     url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
                     method: 'GET',
@@ -455,6 +449,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                     success: function(data) {
                         if (data.mappedFields && _profileMeta && _profileMeta.myInfoSubject &&
                             data.mappedFields.myInfoSubject === _profileMeta.myInfoSubject) {
+                            // Same Singpass — refresh data
                             applyMyInfoPrefill(data.mappedFields);
                             $('#myinfo-prefilled-notice').addClass('show');
                         } else {
@@ -467,10 +462,6 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                             'This SingPass ID is already linked to an existing Happydot account.');
                     }
                 });
-            } else {
-                showConflict('Singpass Already Linked',
-                    'This SingPass ID is already linked to an existing Happydot account.');
-            }
         } else if (status === 'new_user' && flowId) {
             // Fetch prefill data first, then check if it matches existing binding
             $.ajax({
