@@ -423,7 +423,7 @@
 	}
  
     // Extract the first 5 digits of the postal code
-    const postal5D = value.substring(0, 6);
+    const postal5D = value.substring(0, 5);
 	const form = $("#flexcore-merged-registration-form");
 	const submitBtn = form.find('button[type="submit"]');
     // Make the API call to OneMap to validate the first 5 digits of the postal code

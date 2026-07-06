@@ -248,7 +248,7 @@ validatePostalCode: function () {
 	}
  
     // Extract the first 5 digits of the postal code
-    const postal5D = value.substring(0, 6);
+    const postal5D = value.substring(0, 5);
 	// const form = $("#flexcore-profile-form");
 	const submitBtn = document.getElementById("submit-btn");
   // console.log("Submit Button:", submitBtn);
