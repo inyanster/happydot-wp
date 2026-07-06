@@ -467,8 +467,13 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                     });
                 }
             } else {
-                showConflict('Singpass Already Linked',
-                    'This SingPass ID is already linked to a different Happydot account. Please contact support.');
+                if (_profileMeta && _profileMeta.myInfoSubject) {
+                    showConflict('Singpass Mismatch',
+                        'This SingPass does not match the one linked to your account. Please contact support.');
+                } else {
+                    showConflict('Singpass Already Linked',
+                        'This SingPass ID is already linked to a different Happydot account. Please contact support.');
+                }
             }
         } else if (status === 'new_user' && flowId) {
             // Fetch prefill data first, then check if it matches existing binding
@@ -481,7 +486,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                         if (_profileMeta && _profileMeta.myInfoSubject &&
                             data.mappedFields.myInfoSubject !== _profileMeta.myInfoSubject) {
                             showConflict('Singpass Mismatch',
-                                'This SingPass does not match the one linked to your account. Please unbind first before linking a different one.');
+                                'This SingPass does not match the one linked to your account. Please contact support.');
                             return;
                         }
                         applyMyInfoPrefill(data.mappedFields);
