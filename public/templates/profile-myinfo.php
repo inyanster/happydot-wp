@@ -204,6 +204,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     'use strict';
 
     var apiBase = 'https://staging.flexcore.theadventus.com/api/v1';
+    var _profileMeta = null; // cached profile metadata
 
     /**
      * Pre-fill the MyInfo immutable fields on the form from mapped fields.
@@ -239,14 +240,15 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         }
     }
 
-    function loadProfileData() {
+    function loadProfileData(callback) {
         $.ajax({
             url: flexcoreServerAjax.ajaxUrl,
             type: 'POST',
             data: { action: 'flexcore_get_profile', nonce: flexcoreServerAjax.profileNonce },
             success: function(res) {
-                if (!res.success || !res.data) return;
+                if (!res.success || !res.data) { if (callback) callback(); return; }
                 var d = res.data, meta = d.metaData || {};
+                _profileMeta = meta; // cache for callback handler
 
                 // Immutable display fields
                 $('#name').val(d.fullName || '');
@@ -279,7 +281,10 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 } else {
                     $('#myinfo-promo').hide();
                 }
-            }
+
+                if (callback) callback();
+            },
+            error: function() { if (callback) callback(); }
         });
     }
 
@@ -419,9 +424,9 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         });
     }
 
-    $(function() { bindEvents(); loadProfileData(); handleMyInfoCallback(); });
+    $(function() { bindEvents(); loadProfileData(function() { handleMyInfoCallback(); }); });
 
-    // MyInfo callback — handle ineligible / existing_user / new_user statuses
+    // MyInfo callback — runs AFTER profile data is loaded so we know if user is already bound
     function handleMyInfoCallback() {
         var step = $('#myinfo_step').val(), status = $('#myinfo_status').val(), flowId = $('#myinfo_flow_id').val();
         if (step !== 'callback') return;
@@ -434,27 +439,34 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             $('#myinfo-conflict-reason').text('This SingPass ID is already linked to a different Happydot account. Please contact support if you believe this is an error.');
             $('#myinfo-conflict-lightbox').addClass('show');
         } else if (status === 'new_user' && flowId) {
-            // Fetch MyInfo pre-fill data and populate locked fields
-            $.ajax({
-                url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
-                method: 'GET',
-                headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
-                success: function(data) {
-                    if (data.mappedFields) {
-                        applyMyInfoPrefill(data.mappedFields);
-                        $('#myinfo-prefilled-notice').addClass('show');
+            // If user already has a MyInfo UUID bound, this new Singpass doesn't match.
+            // Show conflict instead of flashing someone else's data on the form.
+            if (_profileMeta && _profileMeta.myInfoSubject) {
+                $('#myinfo-conflict-reason').text('Your account is already linked to a SingPass ID. Please unbind first before linking a different one.');
+                $('#myinfo-conflict-lightbox').addClass('show');
+            } else {
+                // No existing MyInfo binding — safe to pre-fill
+                $.ajax({
+                    url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
+                    success: function(data) {
+                        if (data.mappedFields) {
+                            applyMyInfoPrefill(data.mappedFields);
+                            $('#myinfo-prefilled-notice').addClass('show');
+                        }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 409) {
+                            $('#myinfo-conflict-reason').text(
+                                (xhr.responseJSON && xhr.responseJSON.error) ||
+                                'This SingPass ID is already linked to another account. Please contact support.'
+                            );
+                            $('#myinfo-conflict-lightbox').addClass('show');
+                        }
                     }
-                },
-                error: function(xhr) {
-                    if (xhr.status === 409) {
-                        $('#myinfo-conflict-reason').text(
-                            (xhr.responseJSON && xhr.responseJSON.error) ||
-                            'This SingPass ID is already linked to another account. Please contact support.'
-                        );
-                        $('#myinfo-conflict-lightbox').addClass('show');
-                    }
-                }
-            });
+                });
+            }
         }
 
         // Strip callback params from URL
