@@ -83,10 +83,8 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 <div class="myinfo-lightbox" id="myinfo-conflict-lightbox">
     <div class="myinfo-lightbox-content">
         <div class="myinfo-lightbox-icon">⚠️</div>
-        <h3>Singpass Already Linked</h3>
-        <p id="myinfo-conflict-reason">
-            This SingPass ID is already linked to another account. Please contact support.
-        </p>
+        <h3 id="myinfo-conflict-title">Singpass Notice</h3>
+        <p id="myinfo-conflict-reason"></p>
         <button class="btn-primary" onclick="document.getElementById('myinfo-conflict-lightbox').classList.remove('show');">
             OK
         </button>
@@ -432,12 +430,41 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
         if (step !== 'callback') return;
         $('#btn-retrieve-myinfo').hide();
 
+        function showConflict(title, reason) {
+            $('#myinfo-conflict-title').text(title);
+            $('#myinfo-conflict-reason').text(reason);
+            $('#myinfo-conflict-lightbox').addClass('show');
+        }
+
         if (status === 'ineligible') {
-            $('#myinfo-conflict-reason').text('This Singpass is not eligible for HappyDot.sg. Only Singapore Citizens and Permanent Residents can participate.');
-            $('#myinfo-conflict-lightbox').addClass('show');
+            showConflict('Not Eligible', 'This Singpass is not eligible for HappyDot.sg. Only Singapore Citizens and Permanent Residents can participate.');
         } else if (status === 'existing_user') {
-            $('#myinfo-conflict-reason').text('This SingPass ID is already linked to a different Happydot account. Please contact support if you believe this is an error.');
-            $('#myinfo-conflict-lightbox').addClass('show');
+            // Call prefill to check if this is the SAME user or a DIFFERENT one
+            $.ajax({
+                url: apiBase + '/auth/myinfo/prefill?flowId=' + encodeURIComponent(flowId),
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
+                success: function(data) {
+                    if (data.mappedFields && _profileMeta && _profileMeta.myInfoSubject &&
+                        data.mappedFields.myInfoSubject === _profileMeta.myInfoSubject) {
+                        // Same Singpass — already linked to this account, just refresh
+                        applyMyInfoPrefill(data.mappedFields);
+                        $('#myinfo-prefilled-notice').addClass('show');
+                    } else {
+                        showConflict('Singpass Already Linked',
+                            'This SingPass ID is already linked to a different Happydot account. Please contact support if you believe this is an error.');
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 409) {
+                        showConflict('Singpass Already Linked',
+                            'This SingPass ID is already linked to a different Happydot account. Please contact support.');
+                    } else {
+                        showConflict('Singpass Already Linked',
+                            'This SingPass ID is already linked to an existing Happydot account.');
+                    }
+                }
+            });
         } else if (status === 'new_user' && flowId) {
             // Fetch prefill data first, then check if it matches existing binding
             $.ajax({
@@ -446,13 +473,10 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 headers: { 'Authorization': 'Bearer ' + (flexcoreServerAjax.token || '') },
                 success: function(data) {
                     if (data.mappedFields) {
-                        // If user already has a MyInfo UUID and this Singpass is different → conflict
                         if (_profileMeta && _profileMeta.myInfoSubject &&
                             data.mappedFields.myInfoSubject !== _profileMeta.myInfoSubject) {
-                            $('#myinfo-conflict-reason').text(
-                                'This SingPass does not match the one linked to your account. Please unbind first before linking a different one.'
-                            );
-                            $('#myinfo-conflict-lightbox').addClass('show');
+                            showConflict('Singpass Mismatch',
+                                'This SingPass does not match the one linked to your account. Please unbind first before linking a different one.');
                             return;
                         }
                         applyMyInfoPrefill(data.mappedFields);
@@ -461,11 +485,9 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 },
                 error: function(xhr) {
                     if (xhr.status === 409) {
-                        $('#myinfo-conflict-reason').text(
+                        showConflict('Singpass Already Linked',
                             (xhr.responseJSON && xhr.responseJSON.error) ||
-                            'This SingPass ID is already linked to another account. Please contact support.'
-                        );
-                        $('#myinfo-conflict-lightbox').addClass('show');
+                            'This SingPass ID is already linked to another account. Please contact support.');
                     }
                 }
             });
