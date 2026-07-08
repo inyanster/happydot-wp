@@ -145,7 +145,7 @@ if (utm_string_present && referral_code_absent) {
       const lowercaseReq = $("#flexcore_lowercase");
       const numberReq = $("#flexcore_number");
       const specialReq = $("#flexcore_special");
-      if (value.length >= 8 && value.length <= 15) {
+      if (value.length >= 12 && value.length <= 15) {
         lengthReq.addClass("valid");
       } else {
         lengthReq.removeClass("valid");

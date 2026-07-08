@@ -291,7 +291,7 @@ class FlexCore_Server_Public
                     . 'lr=document.getElementById("flexcore_length"),ur=document.getElementById("flexcore_uppercase"),'
                     . 'lrr=document.getElementById("flexcore_lowercase"),nr=document.getElementById("flexcore_number"),'
                     . 'sr=document.getElementById("flexcore_special");'
-                    . 'if(v.length>=8&&v.length<=15)lr.classList.add("valid");else{lr.classList.remove("valid");}'
+                    . 'if(v.length>=12&&v.length<=15)lr.classList.add("valid");else{lr.classList.remove("valid");}'
                     . 'if(/[A-Z]/.test(v))ur.classList.add("valid");else{ur.classList.remove("valid");}'
                     . 'if(/[a-z]/.test(v))lrr.classList.add("valid");else{lrr.classList.remove("valid");}'
                     . 'if(/\\d/.test(v))nr.classList.add("valid");else{nr.classList.remove("valid");}'

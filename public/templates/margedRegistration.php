@@ -393,7 +393,7 @@ if (!defined('ABSPATH')) {
                 <div class="hd-signup-info guide-2rows">
                     <p><?php esc_html_e('Your password must:', 'flexcore-server'); ?></p>
                     <ol class="flexcore_requiments">
-                        <li id="flexcore_length">Be between 8 - 15 characters in length</li>
+                        <li id="flexcore_length">Be between 12 - 15 characters in length</li>
                         <li id="flexcore_uppercase">Contain at least 1 uppercase (capital) letter</li>
                         <li id="flexcore_lowercase">Contain at least 1 lowercase (small) letter</li>
                         <li id="flexcore_number">Contain at least 1 number</li>
