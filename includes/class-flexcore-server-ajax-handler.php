@@ -1640,9 +1640,9 @@ function refresh_authToken() {
 }
 
    public function handle_postalcode_validation() {
-    // Check nonce presence
-    if (!isset($_POST['register_nonce'])) {
-        error_log("Postal code Validation error: nonce missing in POST data.");
+    // Check nonce presence (use $_REQUEST — Cloudflare strips POST bodies on staging)
+    if (!isset($_REQUEST['register_nonce'])) {
+        error_log("Postal code Validation error: nonce missing in request data.");
         wp_send_json_error([
             'message' => __('Security check failed: nonce is missing.', 'flexcore-server'),
             'error_code' => 'nonce_missing'
@@ -1651,7 +1651,7 @@ function refresh_authToken() {
     }
 
     // Verify nonce
-    if (!wp_verify_nonce($_POST['register_nonce'], 'flexcore_register')) {
+    if (!wp_verify_nonce($_REQUEST['register_nonce'], 'flexcore_register')) {
         error_log("Postal Code Validation error: nonce verification failed.");
         wp_send_json_error([
             'message' => __('Security check failed: nonce verification failed.', 'flexcore-server'),
@@ -1660,8 +1660,8 @@ function refresh_authToken() {
         return;
     }
 
-    // Sanitize inputs
-    $postalCode = isset($_POST['postal_code']) ? sanitize_text_field($_POST['postal_code']) : '';
+    // Sanitize inputs (use $_REQUEST — Cloudflare strips POST bodies on staging)
+    $postalCode = isset($_REQUEST['postal_code']) ? sanitize_text_field($_REQUEST['postal_code']) : '';
 
     // Validate required fields
     if (empty($postalCode)) {

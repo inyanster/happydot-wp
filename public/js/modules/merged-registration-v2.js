@@ -265,8 +265,8 @@ if (utm_string_present && referral_code_absent) {
         $("#error-password").text("Please enter your password").show();
         return false;
       }
-      if (password.length < 8 || password.length > 15)
-        passwordErrors.push("between 8 and 15 characters");
+      if (password.length < 12 || password.length > 15)
+        passwordErrors.push("between 12 and 15 characters");
       if (!/[A-Z]/.test(password)) passwordErrors.push("an uppercase letter");
       if (!/[a-z]/.test(password)) passwordErrors.push("a lowercase letter");
       if (!/[0-9]/.test(password)) passwordErrors.push("a number");

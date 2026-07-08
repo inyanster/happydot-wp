@@ -387,6 +387,13 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             };
 
             // If a MyInfo flow is pending, bind it on save
+            // Validate consent checkbox before submission
+            if (!$('#consent').is(':checked')) {
+                msg.removeClass('success').addClass('error').html('Please confirm your details are accurate before saving.').show();
+                btn.prop('disabled', false);
+                return;
+            }
+
             var flowId = $('#myinfo_flow_id').val();
             if (flowId) {
                 formData.myInfoFlowId = flowId;
@@ -399,7 +406,8 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
                 success: function(res) {
                     if (res.success) {
                         $('#myinfo_flow_id').val('');
-                        var pointsMsg = flowId ? ' 50 points awarded!' : '';
+                        // Check backend response for points message (not just flowId presence)
+                        var pointsMsg = (res.data && res.data.pointsAwarded) ? ' ' + res.data.pointsAwarded + ' points awarded!' : (flowId ? ' 50 points awarded!' : '');
                         var msgText = 'Profile updated successfully!' + pointsMsg;
                         msg.removeClass('error').addClass('success').html(msgText).show();
                         loadProfileData();

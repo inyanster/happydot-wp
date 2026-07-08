@@ -69,7 +69,7 @@
             }
 
             // Check password strength
-            if (password.length < 8 || 
+            if (password.length < 12 || 
                 !/[A-Z]/.test(password) || 
                 !/[a-z]/.test(password) || 
                 !/[0-9]/.test(password) || 

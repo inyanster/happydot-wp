@@ -26,10 +26,10 @@ class FlexCore_Server_Utils {
         $strength = 0;
         $message = '';
 
-        if (strlen($password) < 8) {
+        if (strlen($password) < 12) {
             return array(
                 'strength' => $strength,
-                'message' => __('Password must be at least 8 characters long.', 'flexcore-server')
+                'message' => __('Password must be at least 12 characters long.', 'flexcore-server')
             );
         }
 
