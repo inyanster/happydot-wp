@@ -514,7 +514,7 @@ if (utm_string_present && referral_code_absent) {
       }
 
       // Extract the first 5 digits of the postal code
-      const postal5D = value.substring(0, 5);
+      const postal6D = value;
       const form = $("#flexcore-merged-registration-form");
       const submitBtn = form.find('button[type="submit"]');
       // Make the API call to OneMap to validate the first 5 digits of the postal code
@@ -525,7 +525,7 @@ if (utm_string_present && referral_code_absent) {
         data: {
           action: "flexcore_postalcode_validation",
           register_nonce: $("#register_nonce").val(),
-          postal_code: postal5D,
+          postal_code: postal6D,
         },
         success: function (result) {
           if (

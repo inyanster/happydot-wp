@@ -333,16 +333,16 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 $(this).addClass('has-error').removeClass('is-valid');
                 $('.postal-error').text('Postal code must be exactly 6 digits.').show();
             } else {
-                // Validate via OneMap API
+                // Validate via OneMap API with full 6-digit postal code
                 var el = $(this);
-                var postal5D = val.substring(0, 5);
+                var postal6D = val;
                 $.ajax({
                     url: flexcoreServerAjax.ajaxUrl,
                     type: 'POST',
                     data: {
                         action: 'flexcore_postalcode_validation',
                         register_nonce: $('#register_nonce').val(),
-                        postal_code: postal5D
+                        postal_code: postal6D
                     },
                     success: function(result) {
                         if (result.data && result.data.response && result.data.response.found > 0
