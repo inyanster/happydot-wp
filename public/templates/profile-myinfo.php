@@ -323,44 +323,57 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             }
         });
 
-        // Live validation — postal code (format + API)
+        // Live validation — postal code (debounced, clear pending before new request)
+        var postalTimer, postalXhr;
         $('#postal_code').on('input', function() {
-            var val = $(this).val().trim();
-            if (!val) {
-                $(this).removeClass('has-error is-valid');
-                $('.postal-error').hide();
-            } else if (!/^\d{6}$/.test(val)) {
-                $(this).addClass('has-error').removeClass('is-valid');
+            var el = $(this);
+            var val = el.val().trim();
+            clearTimeout(postalTimer);
+            // Clear any in-flight AJAX to avoid overlapping requests
+            if (postalXhr) { postalXhr.abort(); postalXhr = null; }
+
+            // Clear state while typing
+            el.removeClass('has-error is-valid');
+            $('.postal-error').hide();
+
+            if (!val) return;
+
+            // Only show format error for non-numeric input, not while building up to 6 digits
+            if (!/^\d+$/.test(val) || val.length > 6) {
+                el.addClass('has-error').removeClass('is-valid');
                 $('.postal-error').text('Postal code must be exactly 6 digits.').show();
-            } else {
-                // Validate via OneMap API with full 6-digit postal code
-                var el = $(this);
-                var postal6D = val;
-                $.ajax({
+                return;
+            }
+
+            // Wait 300ms after last keystroke before hitting the API
+            postalTimer = setTimeout(function() {
+                if (val.length !== 6) return; // not complete yet
+                postalXhr = $.ajax({
                     url: flexcoreServerAjax.ajaxUrl,
                     type: 'POST',
                     data: {
                         action: 'flexcore_postalcode_validation',
                         register_nonce: $('#register_nonce').val(),
-                        postal_code: postal6D
+                        postal_code: val
                     },
                     success: function(result) {
+                        postalXhr = null;
                         if (result.data && result.data.response && result.data.response.found > 0
                             && result.data.response.results[0].POSTAL !== 'NIL') {
                             el.removeClass('has-error').addClass('is-valid');
-                            $('.postal-error').hide();
                         } else {
                             el.addClass('has-error').removeClass('is-valid');
                             $('.postal-error').text('Invalid postal code. Please enter a valid postal code.').show();
                         }
                     },
                     error: function() {
+                        postalXhr = null;
                         // API unavailable — allow format-only validation to pass
                         el.removeClass('has-error').addClass('is-valid');
                         $('.postal-error').hide();
                     }
                 });
-            }
+            }, 300);
         });
 
         // Submit profile update
