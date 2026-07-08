@@ -526,62 +526,70 @@ if (utm_string_present && referral_code_absent) {
       const input = $("#postal_code");
       const value = input.val().trim();
       const errorDiv = $(".postal-error");
-      let isValidPostalCode = false;
-      // Ensure the postal code is exactly 6 digits
-      if (!value) {
-        input.addClass("has-error").removeClass("is-valid");
-        errorDiv.text("Postal code is required.").show();
-        isValidPostalCode = false;
-        return false;
-      } else if (!/^\d{6}$/.test(value)) {
-        input.addClass("has-error").removeClass("is-valid");
-        errorDiv.text("Postal code must be exactly 6 digits.").show();
-        isValidPostalCode = false;
-        return false;
-      } else {
-        input.removeClass("has-error");
-        errorDiv.text("").hide();
-        isValidPostalCode = true;
-      }
-
-      // Send the full 6-digit postal code to OneMap for validation
-      const postal6D = value;
       const form = $("#flexcore-merged-registration-form");
       const submitBtn = form.find('button[type="submit"]');
-      // Make the API call to OneMap to validate the full 6-digit postal code
+
+      // Clear any pending timer / AJAX
+      if (this._postalTimer) clearTimeout(this._postalTimer);
+      if (this._postalXhr) { this._postalXhr.abort(); this._postalXhr = null; }
+
+      // Reset state while typing
+      input.removeClass("has-error is-valid");
+      errorDiv.text("").hide();
+      submitBtn.prop("disabled", false).removeClass("loading");
+
+      if (!value) return false;
+
+      // Only show format error for non-digit input or >6 chars — not while typing
+      if (!/^\d+$/.test(value) || value.length > 6) {
+        input.addClass("has-error").removeClass("is-valid");
+        errorDiv.text("Postal code must be exactly 6 digits.").show();
+        submitBtn.prop("disabled", true).addClass("loading");
+        return false;
+      }
+
+      // Not complete yet — wait for 6 digits
+      if (value.length < 6) return false;
+
+      // 6 digits entered — show checking indicator, debounce API call
+      errorDiv.text("Checking postal code...").show();
       submitBtn.prop("disabled", true).addClass("loading");
-      $.ajax({
-        url: flexcoreServerAjax.ajaxUrl,
-        type: "POST",
-        data: {
-          action: "flexcore_postalcode_validation",
-          register_nonce: $("#register_nonce").val(),
-          postal_code: postal6D,
-        },
-        success: function (result) {
-          if (
-            result.data.response.found > 0 &&
-            result.data.response.results[0].POSTAL !== "NIL"
-          ) {
-            // If valid postal code is found, consider it as valid
-            isValidPostalCode = true;
+
+      var self = this;
+      this._postalTimer = setTimeout(function () {
+        self._postalXhr = $.ajax({
+          url: flexcoreServerAjax.ajaxUrl,
+          type: "POST",
+          data: {
+            action: "flexcore_postalcode_validation",
+            register_nonce: $("#register_nonce").val(),
+            postal_code: value,
+          },
+          success: function (result) {
+            self._postalXhr = null;
+            if (
+              result.data.response.found > 0 &&
+              result.data.response.results[0].POSTAL !== "NIL"
+            ) {
+              input.removeClass("has-error").addClass("is-valid");
+              errorDiv.text("").hide();
+              submitBtn.prop("disabled", false).removeClass("loading");
+            } else {
+              input.addClass("has-error").removeClass("is-valid");
+              errorDiv.text("Invalid postal code. Please enter a valid postal code.").show();
+              submitBtn.prop("disabled", true).addClass("loading");
+            }
+          },
+          error: function () {
+            self._postalXhr = null;
+            // API unavailable — allow format-only validation to pass
             input.removeClass("has-error").addClass("is-valid");
             errorDiv.text("").hide();
             submitBtn.prop("disabled", false).removeClass("loading");
-          } else {
-            isValidPostalCode = false;
-            input.addClass("has-error").removeClass("is-valid");
-            errorDiv
-              .text("Invalid postal code. Please enter a valid postal code.")
-              .show();
-            submitBtn.prop("disabled", true).addClass("loading");
-          }
-        },
-        error: function () {
-          isValidPostalCode = false;
-        },
-      });
-      return isValidPostalCode;
+          },
+        });
+      }, 300);
+      return false; // async — let callbacks update state
     },
     validateFields: function () {
       let valid = true;
