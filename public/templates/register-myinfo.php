@@ -13,15 +13,18 @@
  *   step=callback&status=ineligible             → show ineligibility lightbox, manual form
  *   step=callback&status=existing_user          → show "account exists" notice
  *
+ * Test param: ?myinfo_status=unavailable → simulate MyInfo down, hide button, show manual form
+ *
  * @package FlexCore_Server
  */
 if (!defined('ABSPATH')) {
     exit;
 }
 
-$step    = isset($_GET['step'])    ? sanitize_text_field($_GET['step'])    : '';
-$status  = isset($_GET['status'])  ? sanitize_text_field($_GET['status'])  : '';
-$flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
+$step          = isset($_GET['step'])          ? sanitize_text_field($_GET['step'])          : '';
+$status        = isset($_GET['status'])        ? sanitize_text_field($_GET['status'])        : '';
+$flow_id       = isset($_GET['flowId'])       ? sanitize_text_field($_GET['flowId'])       : '';
+$myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myinfo_status']) : '';
 ?>
 <style>
     /* Singpass retrieve button */
@@ -134,6 +137,14 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     .form-divider span {
         background: #fff; padding: 0 12px; position: relative;
     }
+
+    /* MyInfo unavailable notice */
+    .myinfo-unavailable-notice {
+        background: #FFF3CD; border: 1px solid #FFECB5;
+        border-radius: 8px; padding: 16px; margin-bottom: 24px;
+        color: #856404; font-size: 14px; display: none;
+    }
+    .myinfo-unavailable-notice.show { display: block; }
 </style>
 
 <!-- Ineligibility lightbox -->
@@ -148,6 +159,11 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             Continue with manual registration
         </button>
     </div>
+</div>
+
+<!-- MyInfo unavailable notice -->
+<div class="myinfo-unavailable-notice" id="myinfo-unavailable-notice">
+    <strong>MyInfo is currently unavailable.</strong> Singpass verification is temporarily down. Please fill in the form manually below.
 </div>
 
 <!-- Existing user notice -->
@@ -171,6 +187,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 <input type="hidden" id="myinfo_flow_id" value="<?php echo esc_attr($flow_id); ?>">
 <input type="hidden" id="myinfo_step"    value="<?php echo esc_attr($step); ?>">
 <input type="hidden" id="myinfo_status"  value="<?php echo esc_attr($status); ?>">
+<input type="hidden" id="myinfo_unavailable" value="<?php echo esc_attr($myinfo_status); ?>">
 
 <!-- Hidden flow ID for MyInfo pre-filled state -->
 <input type="hidden" id="myinfo_flow_id" value="<?php echo esc_attr($flow_id); ?>">
@@ -219,6 +236,14 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
             var step   = $('#myinfo_step').val();
             var status = $('#myinfo_status').val();
             var flowId = $('#myinfo_flow_id').val();
+            var unavailable = $('#myinfo_unavailable').val();
+
+            // MyInfo unavailable → hide button, show notice, allow manual form
+            if (unavailable === 'unavailable') {
+                $('#btn-retrieve-myinfo').hide();
+                $('#myinfo-unavailable-notice').addClass('show');
+                return;
+            }
 
             // On callback from MyInfo flow
             if (step === 'callback') {

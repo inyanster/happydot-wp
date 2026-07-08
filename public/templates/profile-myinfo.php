@@ -6,9 +6,10 @@
  */
 if (!defined('ABSPATH')) exit;
 
-$step    = isset($_GET['step'])    ? sanitize_text_field($_GET['step'])    : '';
-$status  = isset($_GET['status'])  ? sanitize_text_field($_GET['status'])  : '';
-$flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
+$step          = isset($_GET['step'])          ? sanitize_text_field($_GET['step'])          : '';
+$status        = isset($_GET['status'])        ? sanitize_text_field($_GET['status'])        : '';
+$flow_id       = isset($_GET['flowId'])       ? sanitize_text_field($_GET['flowId'])       : '';
+$myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myinfo_status']) : '';
 ?>
 <style>
     .myinfo-prefilled-notice { background: #E8F5E9; border: 1px solid #C8E6C9; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 14px; color: #2E7D32; display: none; }
@@ -24,6 +25,12 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     .has-error { background-color: rgba(245,159,159,0.75) !important; border: 1px solid red !important; }
     .is-valid { background-color: #d4edda !important; }
     .field-error { color: red; font-size: 12px; margin-top: 4px; display: none; }
+    .myinfo-unavailable-notice {
+        background: #FFF3CD; border: 1px solid #FFECB5;
+        border-radius: 8px; padding: 16px; margin-bottom: 24px;
+        color: #856404; font-size: 14px; display: none;
+    }
+    .myinfo-unavailable-notice.show { display: block; }
     .hd-my-profile { max-width: 800px; margin: 0 auto; }
     .hd-my-profile h2 { margin-bottom: 10px; }
     .hd-form-group { margin-bottom: 16px; }
@@ -78,6 +85,7 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
 <input type="hidden" id="myinfo_flow_id" value="<?php echo esc_attr($flow_id); ?>">
 <input type="hidden" id="myinfo_step"    value="<?php echo esc_attr($step); ?>">
 <input type="hidden" id="myinfo_status"  value="<?php echo esc_attr($status); ?>">
+<input type="hidden" id="myinfo_unavailable" value="<?php echo esc_attr($myinfo_status); ?>">
 <input type="hidden" id="myinfo_subject" value="<?php echo isset($_GET['myInfoSubject']) ? esc_attr($_GET['myInfoSubject']) : ''; ?>">
 
 <!-- UUID conflict lightbox -->
@@ -102,6 +110,11 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     <!-- Promo message (hidden by default, shown if singpassPointFlag !== '1') -->
     <div id="myinfo-promo" style="display:none; background:#FFF3CD; border:1px solid #FFECB5; border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#856404; font-size:14px;">
         <span id="myinfo-promo-text">Verify with Singpass today and be awarded with 50 points immediately!</span>
+    </div>
+
+    <!-- MyInfo unavailable notice -->
+    <div class="myinfo-unavailable-notice" id="myinfo-unavailable-notice">
+        <strong>MyInfo is currently unavailable.</strong> Singpass verification is temporarily down. Please update your details manually below.
     </div>
 
     <!-- Singpass button -->
@@ -436,6 +449,16 @@ $flow_id = isset($_GET['flowId']) ? sanitize_text_field($_GET['flowId']) : '';
     // MyInfo callback — runs AFTER profile data is loaded so we know if user is already bound
     function handleMyInfoCallback() {
         var step = $('#myinfo_step').val(), status = $('#myinfo_status').val(), flowId = $('#myinfo_flow_id').val();
+        var unavailable = $('#myinfo_unavailable').val();
+
+        // MyInfo unavailable → hide button, show notice, allow manual form
+        if (unavailable === 'unavailable') {
+            $('#btn-retrieve-myinfo').hide();
+            $('#myinfo-promo').hide();
+            $('#myinfo-unavailable-notice').addClass('show');
+            return;
+        }
+
         if (step !== 'callback') return;
         $('#btn-retrieve-myinfo').hide();
 
