@@ -36,7 +36,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
     .hd-form-group { margin-bottom: 16px; }
     .hd-form-group label { display: block; font-weight: 600; margin-bottom: 4px; color: #333; }
     .hd-formfild { width: 100%; padding: 10px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
-    select.hd-formfild { background: #fff; }
+    select.hd-formfild { background: #fff !important; }
 
     /* MyInfo lightbox — shared with register flow */
     .myinfo-lightbox {
