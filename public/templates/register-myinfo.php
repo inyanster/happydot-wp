@@ -1,6 +1,6 @@
 <?php
 /**
- * Register with Singpass MyInfo form template
+ * Register with Singpass Myinfo form template
  *
  * UX flow:
  *  - Form is ALWAYS visible on page load
@@ -153,7 +153,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         <div class="myinfo-lightbox-icon">🔒</div>
         <h3>Unable to use Singpass</h3>
         <p id="myinfo-ineligible-reason">
-            Unfortunately, you are not eligible to register using Singpass MyInfo at this time.
+            Unfortunately, you are not eligible to register using Singpass Myinfo at this time.
         </p>
         <button class="btn-primary" onclick="FlexcoreRegisterMyinfo.closeIneligibleLightbox()">
             Continue with manual registration
@@ -163,7 +163,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
 <!-- MyInfo unavailable notice -->
 <div class="myinfo-unavailable-notice" id="myinfo-unavailable-notice">
-    <strong>MyInfo is currently unavailable.</strong> Singpass verification is temporarily down. Please fill in the form manually below.
+    <strong>Myinfo is currently unavailable.</strong> Singpass verification is temporarily down. Please fill in the form manually below.
 </div>
 
 <!-- Existing user notice -->
@@ -174,7 +174,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
 <!-- Pre-filled notice -->
 <div class="myinfo-prefilled-notice" id="myinfo-prefilled-notice">
-    ✅ Your details have been verified via Singpass MyInfo. Locked fields cannot be changed.
+    ✅ Your details have been verified via Singpass Myinfo. Locked fields cannot be changed.
 </div>
 
 <!-- Loading state -->
@@ -257,7 +257,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
             if (status === 'ineligible') {
                 $('#myinfo-ineligible-reason').text(
-                    'Unfortunately, only Singapore Citizens and Permanent Residents can sign up via Singpass MyInfo. Please fill in manually below.'
+                    'Unfortunately, only Singapore Citizens and Permanent Residents can sign up via Singpass Myinfo. Please fill in manually below.'
                 );
                 $('#myinfo-ineligible-lightbox').addClass('show');
                 // Show the manual form section (already visible)
@@ -279,7 +279,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         // Lock MyInfo-sourced fields so user can't edit them
         // Note: postal_code is NOT locked — always user-editable per requirement
         lockMyInfoFields: function() {
-            var lockedFields = ['dob', 'gender', 'race', 'citizenship', 'name', 'marital_status'];
+            var lockedFields = ['dob', 'gender', 'race', 'citizenship', 'name'];
             var self = this;
 
             lockedFields.forEach(function(field) {
@@ -289,7 +289,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                     // Add badge under the field
                     var $group = $field.closest('.hd-form-group');
                     if ($group.length && !$group.find('.myinfo-locked-badge').length) {
-                        $group.append('<div class="myinfo-locked-badge">🔒 Verified via Singpass MyInfo</div>');
+                        $group.append('<div class="myinfo-locked-badge">🔒 Verified via Singpass Myinfo</div>');
                         $group.find('.myinfo-locked-badge').addClass('show');
                     }
                 }
@@ -301,7 +301,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 $name.prop('readonly', true).addClass('myinfo-locked');
                 var $nameGroup = $name.closest('.hd-form-group');
                 if ($nameGroup.length && !$nameGroup.find('.myinfo-locked-badge').length) {
-                    $nameGroup.append('<div class="myinfo-locked-badge">🔒 Verified via Singpass MyInfo</div>');
+                    $nameGroup.append('<div class="myinfo-locked-badge">🔒 Verified via Singpass Myinfo</div>');
                     $nameGroup.find('.myinfo-locked-badge').addClass('show');
                 }
             }
@@ -379,7 +379,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                         if ($othersInput.length) {
                             $othersInput.prop('readonly', true).addClass('myinfo-locked');
                             $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').remove();
-                            $othersInput.closest('.hd-form-group').append('<div class="myinfo-locked-badge">🔒 Verified via Singpass MyInfo</div>');
+                            $othersInput.closest('.hd-form-group').append('<div class="myinfo-locked-badge">🔒 Verified via Singpass Myinfo</div>');
                             $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').addClass('show');
                         }
                     }
@@ -396,7 +396,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                     if ($othersInput.length) {
                         $othersInput.prop('readonly', true).addClass('myinfo-locked');
                         $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').remove();
-                        $othersInput.closest('.hd-form-group').append('<div class="myinfo-locked-badge">🔒 Verified via Singpass MyInfo</div>');
+                        $othersInput.closest('.hd-form-group').append('<div class="myinfo-locked-badge">🔒 Verified via Singpass Myinfo</div>');
                         $othersInput.closest('.hd-form-group').find('.myinfo-locked-badge').addClass('show');
                     }
                 }

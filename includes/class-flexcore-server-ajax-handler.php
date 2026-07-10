@@ -348,6 +348,9 @@ class FlexCore_Server_Ajax_Handler
         if (!empty($_REQUEST['preferredName'])) {
             $data['preferredName'] = sanitize_text_field($_REQUEST['preferredName']);
         }
+        if (!empty($_REQUEST['maritalStatus'])) {
+            $data['maritalStatus'] = sanitize_text_field($_REQUEST['maritalStatus']);
+        }
 
 
         $response = $api->update_profile($token, $data);

@@ -136,7 +136,7 @@ cursor: pointer;}
         </div>
 
         <div class="hd-form-group">
-            <label class="hd-label" for="name"><?php esc_html_e('Full name (As per NRIC)', 'flexcore-server'); ?><span style="color:red; font-size:20px; margin-left:2px">*</span>
+            <label class="hd-label" for="name"><?php esc_html_e('Full Name', 'flexcore-server'); ?><span style="color:red; font-size:20px; margin-left:2px">*</span>
                 <span><?php esc_html_e('Full name should consist of your given & family name', 'flexcore-server'); ?></span>
             </label>
             <input class="hd-formfild" type="text" id="name" name="name" required maxlength="100" readonly>

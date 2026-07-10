@@ -114,7 +114,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
     <!-- MyInfo unavailable notice -->
     <div class="myinfo-unavailable-notice" id="myinfo-unavailable-notice">
-        <strong>MyInfo is currently unavailable.</strong> Singpass verification is temporarily down. Please update your details manually below.
+        <strong>Myinfo is currently unavailable.</strong> Singpass verification is temporarily down. Please update your details manually below.
     </div>
 
     <!-- Singpass button -->
@@ -125,17 +125,17 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
     </div>
 
     <div class="myinfo-prefilled-notice" id="myinfo-prefilled-notice">
-        Your details have been verified via Singpass MyInfo. Locked fields cannot be changed.
+        Your details have been verified via Singpass Myinfo. Locked fields cannot be changed.
     </div>
 
-    <div class="form-divider"><span>Info retrieved from MyInfo</span></div>
+    <div class="form-divider"><span>Info retrieved from Myinfo</span></div>
 
     <form id="flexcore-profile-myinfo-form" novalidate>
         <input type="hidden" id="register_nonce" value="<?php echo wp_create_nonce('flexcore_register'); ?>">
 
         <!-- IMMUTABLE: Full Name -->
         <div class="hd-form-group">
-            <label>Full Name (As per NRIC) <span style="color:red">*</span></label>
+            <label>Full Name <span style="color:red">*</span></label>
             <input class="hd-formfild field-immutable" type="text" id="name" readonly>
         </div>
 
@@ -151,7 +151,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             </div>
         </div>
 
-        <!-- IMMUTABLE: Gender | Marital Status -->
+        <!-- Gender (immutable) | Marital Status (editable) -->
         <div style="display:flex; gap:16px; flex-wrap:wrap;">
             <div class="hd-form-group" style="flex:1; min-width:200px;">
                 <label>Sex <span style="color:red">*</span></label>
@@ -159,7 +159,15 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             </div>
             <div class="hd-form-group" style="flex:1; min-width:200px;">
                 <label>Marital Status <span style="color:red">*</span></label>
-                <input class="hd-formfild field-immutable" type="text" id="marital_status_display" readonly>
+                <select class="hd-formfild" id="marital_status" name="marital_status" required>
+                    <option value="">Select marital status</option>
+                    <option value="single">Single</option>
+                    <option value="soontobemarried">Soon to be Married</option>
+                    <option value="married">Married</option>
+                    <option value="divorced">Divorced</option>
+                    <option value="separated">Separated</option>
+                    <option value="widowed">Widowed</option>
+                </select>
             </div>
         </div>
 
@@ -248,7 +256,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         // Marital status
         if (fields.maritalStatus) {
             var ms = fields.maritalStatus;
-            $('#marital_status_display').val(ms.charAt(0).toUpperCase() + ms.slice(1));
+            $('#marital_status').val(ms.toLowerCase());
         }
     }
 
@@ -270,7 +278,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 }
                 $('#citizenship_display').val(meta.citizenship === 'singaporecitizen' ? 'Singapore Citizen' : meta.citizenship === 'permanentResident' ? 'Permanent Resident' : '');
                 $('#gender_display').val(meta.gender === 'male' ? 'Male' : meta.gender === 'female' ? 'Female' : meta.gender === 'others' ? 'Others' : '');
-                $('#marital_status_display').val((meta.maritalStatus || '').charAt(0).toUpperCase() + (meta.maritalStatus || '').slice(1));
+                $('#marital_status').val((meta.maritalStatus || '').toLowerCase());
                 $('#race_display').val((meta.race || '').charAt(0).toUpperCase() + (meta.race || '').slice(1));
                 if (meta.race === 'others') {
                     $('#othersRaceGroup').show();
@@ -409,6 +417,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 mobileNumber: mobileVal,
                 postalCode: $('#postal_code').val(),
                 preferredName: $('#preferred_name').val(),
+                maritalStatus: $('#marital_status').val(),
                 redirect_to_dashboard: false
             };
 

@@ -84,7 +84,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         <div class="hd-col-12">
                 <div class="hd-form-group">
                     <label class="hd-label" for="name">
-                        <?php esc_html_e('Full name (As per NRIC)', 'flexcore-server'); ?><span>*</span>
+                        <?php esc_html_e('Full Name', 'flexcore-server'); ?><span>*</span>
                         <!-- <small>
                              <?php//esc_html_e('Full name should consist of your given & family name', 'flexcore-server'); ?> 
                         </small> -->

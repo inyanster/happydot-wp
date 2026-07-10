@@ -193,13 +193,13 @@ if (!defined('ABSPATH')) {
                  ===================== -->
 
             <div class="hd-col-12" id="myinfo-section-header" style="display:none;">
-                <div class="form-divider"><span>Info retrieved from MyInfo</span></div>
+                <div class="form-divider"><span>Info retrieved from Myinfo</span></div>
             </div>
 
             <div class="hd-col-12">
                 <div class="hd-form-group">
                     <label class="hd-label" for="name">
-                        <?php esc_html_e('Full name (As per NRIC)', 'flexcore-server'); ?><span>*</span>
+                        <?php esc_html_e('Full Name', 'flexcore-server'); ?><span>*</span>
                     </label>
                     <input class="hd-formfild" type="text" id="name" name="name" required maxlength="100">
                     <div class="field-error name-error" id="error-name"></div>
