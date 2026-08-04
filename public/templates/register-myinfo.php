@@ -275,6 +275,11 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 $('#myinfo-prefilled-notice').addClass('show');
                 this.lockMyInfoFields();
                 this.fetchPrefillData(flowId);
+                // Re-apply referral code handling after callback — ensures source
+                // stays greyed out and referral code input remains visible.
+                if (window.MergedRegistration && window.MergedRegistration.handleReferralAndUTM) {
+                    window.MergedRegistration.handleReferralAndUTM();
+                }
             }
             // For any other state, form is already visible — nothing more to do
         },
