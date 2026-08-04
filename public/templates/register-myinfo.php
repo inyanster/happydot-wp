@@ -224,8 +224,11 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         startMyInfo: function() {
             $('#btn-retrieve-myinfo').hide();
             $('#singpass-loading').addClass('show');
+            // Preserve all current query params (e.g. referral_code) through the MyInfo flow
+            var currentParams = new URLSearchParams(window.location.search);
+            currentParams.set('step', 'callback');
             window.location.href = this.apiBase + '/auth/myinfo/start?returnTo='
-                + encodeURIComponent(window.location.pathname + '?step=callback');
+                + encodeURIComponent(window.location.pathname + '?' + currentParams.toString());
         },
 
         closeIneligibleLightbox: function() {

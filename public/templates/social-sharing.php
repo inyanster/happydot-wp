@@ -14,7 +14,7 @@ if (isset($profile_data['userData']['metaData']['referralCode'])) {
     $referralCode = '';
 }
 
-$referral_src = site_url("referralsignup/?referral_code={$referralCode}");
+$referral_src = add_query_arg('referral_code', $referralCode, get_permalink(get_option('flexcore_register_page')));
 ?>
 
 
