@@ -25,6 +25,8 @@
             var isProfileComplete = response.data.data.metaData.isProfileCompleted;
             var lifeStyleSurveyCompleted = response.data.data.lifestyleStatus;
             var membershipStatus = response.data.data.membershipStatus;
+            // Singpass users: skip Step 4 (verification) entirely
+            var isSingpassUser = !!(response.data.data.metaData && response.data.data.metaData.myInfoSubject);
             
             if (!isProfileComplete) {
               $(".profile-step.account-step").addClass("active");
@@ -78,6 +80,31 @@
               //   $(".profile-step.verification-step .profile-step-info").removeClass("active");
               //   $(".profile-step.verification-step .profile-step-info").addClass("disable");
               
+            }
+            // Singpass users skip the verification step; go directly to Get Started
+            else if (isSingpassUser) {
+                $(".profile-step.account-step").removeClass("active");
+                $(".profile-step.account-step .profile-step-number").removeClass("active");
+                
+                $(".profile-step.account-step .profile-step-info").removeClass("active");
+                $(".profile-step.account-step .profile-step-info").addClass("disable");
+                 $(".profile-step.account-step .content").hide();  
+                 $(".profile-step.account-step .profile-step-number").addClass("completed");
+             $(".profile-step.account-step .profile-step-number").html('<i aria-hidden="true" class="icon icon-check"></i>');
+                
+                $(".profile-step.survey-step").removeClass("active");
+                $(".profile-step.survey-step .profile-step-number").removeClass("active");
+                $(".profile-step.survey-step .profile-step-number").addClass("completed");
+                $(".profile-step.survey-step .profile-step-number").html( '<i aria-hidden="true" class="icon icon-check"></i>');
+                $(".profile-step.survey-step .profile-step-info").removeClass("active");
+                $(".profile-step.survey-step .profile-step-info").addClass("disable");
+              $(".profile-step.survey-step .content").hide();
+                
+                // Skip verification — go straight to Get Started
+               $(".profile-step.get-started-step").addClass("active");
+                $(".profile-step.get-started-step .profile-step-number").addClass("active");
+                    $(".profile-step.get-started-step .profile-step-number").removeClass("disable");
+                $(".profile-step.get-started-step .profile-step-info").removeClass("disable");
             }
             else if(membershipStatus !=4){
                 $(".profile-step.account-step").removeClass("active");

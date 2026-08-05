@@ -1,5 +1,10 @@
 
-	
+	<?php
+// Check if user signed up via Singpass — if so, skip the verification step
+$profile_data = FlexCore_Server_Session::get_user_profile();
+$is_singpass_user = !empty($profile_data['metaData']['myInfoSubject']);
+?>
+
 	<div class="myaccount-infodiv">
 		<h2>Complete Your Account To Continue</h2>
 		<h4>Awesome! You’re almost there to become a HappyDotter!</h4>
@@ -45,6 +50,7 @@
 				</div>
 			</div>
 
+			<?php if (!$is_singpass_user): ?>
 			<!-- Step 4 -->
 			<div class="profile-step verification-step">
 				<div class="profile-step-number  ">4</div>
@@ -55,16 +61,19 @@
 					</div>
 				</div>
 			</div>
+			<?php endif; ?>
 
 			<!-- Step 5 -->
 			<div class="profile-step get-started-step">
-				<div class="profile-step-number ">5</div>
+				<div class="profile-step-number "><?php echo $is_singpass_user ? '4' : '5'; ?></div>
 				<div class="profile-step-info ">
 					<div class="heading-wrap">
 						<h3>Get Started</h3>
 						<p>Receive your welcome voucher, start doing surveys and earn happypoints</p>
+						<?php if (!$is_singpass_user): ?>
 						<p><br><br>*Note: A simple ID confirmation is necessary. Our team will be reaching out to you - please do extend your kind cooperation </p>
 						<p>(HappyDot.sg is part of RySense, a Singapore based research organization where we pride ourselves in the authenticity of our data collection. Hence, verifying our member's details is part of our onboarding process in making sure our community is genuine and legitimate.)</p>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>
