@@ -209,6 +209,25 @@ public function get_current_points($token) {
     
     return $response;
 }
+
+    /**
+     * Get membership message HTML for status=4 users
+     *
+     * @param string $token Bearer token
+     * @return array|WP_Error Response data or WP_Error
+     */
+    public function get_membership_message($token) {
+        $response = $this->request('api/v1/user/membership-message', array(
+            'method' => 'GET',
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $token,
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ),
+        ));
+
+        return $response;
+    }
                 
     /**
      * Verify OTP for login

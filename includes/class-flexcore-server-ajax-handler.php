@@ -1403,9 +1403,22 @@ class FlexCore_Server_Ajax_Handler
             return;
         }
         if (!empty($response['success']) && isset($response['data'])) {
+            // Also fetch points and membership message
+            $points_response = $api->get_current_points($token);
+            $message_response = $api->get_membership_message($token);
+
+            $merged_data = $response['data'];
+            if (!is_wp_error($points_response) && !empty($points_response['success'])) {
+                $merged_data['currentPoints'] = $points_response['data']['currentPoints'] ?? 0;
+                $merged_data['luckyDrawChances'] = $points_response['data']['totalLuckyDrawChance'] ?? 0;
+            }
+            if (!is_wp_error($message_response) && !empty($message_response['success'])) {
+                $merged_data['membershipMessageHtml'] = $message_response['data']['htmlContent'] ?? null;
+            }
+
             wp_send_json_success(array(
                 'message' => $response['message'],
-                'data' => $response['data']
+                'data' => $merged_data
             ));
         } else {
             wp_send_json_error(array(

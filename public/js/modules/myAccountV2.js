@@ -21,6 +21,27 @@
         },
         success: function (response) {
           if (response.success && response.data) {
+            
+            // Show stats bar with points/chances
+            var points = response.data.data.currentPoints || 0;
+            var chances = response.data.data.luckyDrawChances || 0;
+            $('#myaccount-points').text(points.toLocaleString());
+            $('#myaccount-chances').text(chances);
+            $('.myaccount-stats-bar').show();
+
+            // Handle membershipStatus = 4: hide onboarding, show membership message
+            if (response.data.data.membershipStatus == 4 || response.data.data.membershipStatus == '4') {
+                $('#onboarding-section').hide();
+                if (response.data.data.membershipMessageHtml) {
+                    $('#membership-message-content').html(response.data.data.membershipMessageHtml);
+                    $('#membership-message-box').show();
+                }
+                return; // skip onboarding step logic
+            }
+
+            // Show onboarding for status != 4
+            $('#onboarding-section').show();
+            $('#membership-message-box').hide();
                 
             var isProfileComplete = response.data.data.metaData.isProfileCompleted;
             var lifeStyleSurveyCompleted = response.data.data.lifestyleStatus;
