@@ -109,7 +109,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
     <!-- Promo message (hidden by default, shown if singpassPointFlag !== '1') -->
     <div id="myinfo-promo" style="display:none; background:#FFF3CD; border:1px solid #FFECB5; border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#856404; font-size:14px;">
-        <span id="myinfo-promo-text">Verify with Singpass today and be awarded with 50 points immediately!</span>
+        <span id="myinfo-promo-text">Verify with Singpass today and be awarded with 100 points immediately!</span>
     </div>
 
     <!-- MyInfo unavailable notice -->
@@ -442,7 +442,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                     if (res.success) {
                         $('#myinfo_flow_id').val('');
                         // Check backend response for points message (not just flowId presence)
-                        var pointsMsg = (res.data && res.data.pointsAwarded) ? ' ' + res.data.pointsAwarded + ' points awarded!' : (flowId ? ' 50 points awarded!' : '');
+                        var pointsMsg = (res.data && res.data.pointsAwarded) ? ' ' + res.data.pointsAwarded + ' points awarded!' : (flowId ? ' 100 points awarded!' : '');
                         var msgText = 'Profile updated successfully!' + pointsMsg;
                         msg.removeClass('error').addClass('success').html(msgText).show();
                         loadProfileData();
@@ -492,7 +492,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
         function onMyInfoPulled() {
             // Points awarded on form SAVE, not on MyInfo pull
-            $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your 50 points.');
+            $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your 100 points.');
             $('#myinfo-promo').show();
         }
 

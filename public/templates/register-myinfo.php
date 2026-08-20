@@ -199,7 +199,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         <button type="button" id="btn-retrieve-myinfo" onclick="FlexcoreRegisterMyinfo.startMyInfo(); return false;" style="background:none;border:none;padding:0;cursor:pointer;">
             <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass-button.png'); ?>" alt="Retrieve Myinfo with Singpass" style="height:48px;width:auto;">
         </button>
-        <span class="myinfo-promo-text" style="color: #1a56db; font-style: italic; font-size: 15px; line-height: 1.5; max-width: 480px;">
+        <span class="myinfo-promo-text" style="color: #CA0D07; font-style: italic; font-size: 15px; line-height: 1.5; max-width: 480px;">
             Get your profile verified by Singpass and be awarded with extra 100 HappyPoints and start doing surveys immediately!
         </span>
     </div>
