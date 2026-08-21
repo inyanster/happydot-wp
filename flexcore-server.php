@@ -109,10 +109,7 @@ add_action('template_redirect', function () {
     }
 
     if ($is_dashboard_page && !current_user_can('manage_options')) {
-        $my_account_url = get_permalink(get_option('flexcore_my_account_page'));
-        if (empty($my_account_url)) {
-            $my_account_url = home_url('/my-account');
-        }
+        $my_account_url = home_url('/my-account');
         wp_redirect($my_account_url, 301);
         exit;
     }
