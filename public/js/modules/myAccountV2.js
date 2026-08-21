@@ -29,15 +29,15 @@
             $('#myaccount-chances').text(chances);
             $('.myaccount-stats-bar').show();
 
-            // Greeting header: 'Hi, PREFERRED NAME' (+ full name on secondary line)
+            // Greeting header: preferred name (red) on line 1, account name (normal) on line 2
             var preferredName = response.data.data.metaData && response.data.data.metaData.preferredName;
             var fullName = response.data.data.fullName || response.data.data.name || '';
-            var usePreferredName = !!(preferredName && preferredName !== fullName);
-            $('#myaccount-display-name').text(usePreferredName ? preferredName : fullName);
-            if (usePreferredName) {
-                $('#myaccount-full-name').text(fullName).show();
+            var showPreferred = !!(preferredName && preferredName !== fullName);
+            $('#myaccount-preferred-name').text(showPreferred ? preferredName : fullName);
+            if (showPreferred) {
+                $('#myaccount-account-name').text(fullName).show();
             } else {
-                $('#myaccount-full-name').hide().text('');
+                $('#myaccount-account-name').hide().text('');
             }
             $('.myaccount-greeting').show();
 

@@ -346,7 +346,7 @@ class FlexCore_Server_Public
                     'flexcore-my-account-v2',
                     plugin_dir_url(__FILE__) . 'js/modules/myAccountV2.js',
                     array('jquery', 'flexcore-server-public'),
-                    FLEXCORE_SERVER_VERSION,
+                    filemtime(plugin_dir_path(__FILE__) . 'js/modules/myAccountV2.js'),
                     true
                 );
                 wp_enqueue_script(

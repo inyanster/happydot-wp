@@ -5,10 +5,10 @@ $is_singpass_user = !empty($profile['metaData']['myInfoSubject']);
 $membership_status = FlexCore_Server_Session::get_user_membership_status();
 ?>
 
-<!-- Greeting Header: 'Hi, PREFERRED NAME' + account name below (hidden initially, populated by JS) -->
+<!-- Greeting Header: preferred name (red) + account name (normal) below (hidden initially, populated by JS) -->
 <div class="myaccount-greeting" style="display:none;">
-    <h2>Hi, <span id="myaccount-display-name"></span></h2>
-    <div id="myaccount-full-name"></div>
+    <h2 id="myaccount-preferred-name" style="color:#CA0D07; font-weight:600;"></h2>
+    <div id="myaccount-account-name"></div>
 </div>
 
 <!-- Top Right: Balance + Chances (hidden initially, populated by JS) -->
