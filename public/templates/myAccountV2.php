@@ -1,8 +1,15 @@
 <?php
 $profile_data = FlexCore_Server_Session::get_user_profile();
-$is_singpass_user = !empty($profile_data['metaData']['myInfoSubject']);
+$profile = (isset($profile_data['userData']) && is_array($profile_data['userData'])) ? $profile_data['userData'] : $profile_data;
+$is_singpass_user = !empty($profile['metaData']['myInfoSubject']);
 $membership_status = FlexCore_Server_Session::get_user_membership_status();
 ?>
+
+<!-- Greeting Header: 'Hi, PREFERRED NAME' + account name below (hidden initially, populated by JS) -->
+<div class="myaccount-greeting" style="display:none;">
+    <h2>Hi, <span id="myaccount-display-name"></span></h2>
+    <div id="myaccount-full-name"></div>
+</div>
 
 <!-- Top Right: Balance + Chances (hidden initially, populated by JS) -->
 <div class="myaccount-stats-bar" style="display:none;">

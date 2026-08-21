@@ -29,6 +29,18 @@
             $('#myaccount-chances').text(chances);
             $('.myaccount-stats-bar').show();
 
+            // Greeting header: 'Hi, PREFERRED NAME' (+ full name on secondary line)
+            var preferredName = response.data.data.metaData && response.data.data.metaData.preferredName;
+            var fullName = response.data.data.fullName;
+            var usePreferredName = !!(preferredName && preferredName !== fullName);
+            $('#myaccount-display-name').text(usePreferredName ? preferredName : fullName);
+            if (usePreferredName) {
+                $('#myaccount-full-name').text(fullName).show();
+            } else {
+                $('#myaccount-full-name').hide().text('');
+            }
+            $('.myaccount-greeting').show();
+
             // Handle membershipStatus = 4: hide onboarding, show membership message
             if (response.data.data.membershipStatus == 4 || response.data.data.membershipStatus == '4') {
                 $('#onboarding-section').hide();
@@ -48,6 +60,13 @@
             var membershipStatus = response.data.data.membershipStatus;
             // Singpass users: skip Step 4 (verification) entirely
             var isSingpassUser = !!(response.data.data.metaData && response.data.data.metaData.myInfoSubject);
+
+            // Early hide: ensure verification step never shows for Singpass users,
+            // regardless of which onboarding branch runs below.
+            if (isSingpassUser) {
+                $(".profile-step.verification-step").hide();
+                $(".profile-step.get-started-step .profile-step-number").text("4");
+            }
             
             if (!isProfileComplete) {
               $(".profile-step.account-step").addClass("active");
