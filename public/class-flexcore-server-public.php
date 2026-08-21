@@ -254,7 +254,9 @@ class FlexCore_Server_Public
                     true
                 );
             }
-            if (has_shortcode($post->post_content, 'flexcore_register')
+            $is_register_page = (int) get_option('flexcore_register_page') === (int) $post->ID;
+            if ($is_register_page
+                || has_shortcode($post->post_content, 'flexcore_register')
                 || has_shortcode($post->post_content, 'flexcore_register_myinfo')
                 || has_shortcode($post->post_content, 'flexcore_referral_signup')
             ) {
