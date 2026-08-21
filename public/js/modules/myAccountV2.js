@@ -31,7 +31,7 @@
 
             // Greeting header: 'Hi, PREFERRED NAME' (+ full name on secondary line)
             var preferredName = response.data.data.metaData && response.data.data.metaData.preferredName;
-            var fullName = response.data.data.fullName;
+            var fullName = response.data.data.fullName || response.data.data.name || '';
             var usePreferredName = !!(preferredName && preferredName !== fullName);
             $('#myaccount-display-name').text(usePreferredName ? preferredName : fullName);
             if (usePreferredName) {

@@ -95,6 +95,28 @@ add_action('init', function () {
 });
 
 add_action('template_redirect', function () {
+    // Force-redirect the /flexcore-dashboard/ page to My Account (it should never be shown).
+    $dashboard_page_id = get_option('flexcore_dashboard_page');
+    $is_dashboard_page = false;
+
+    if (!empty($dashboard_page_id) && is_page($dashboard_page_id)) {
+        $is_dashboard_page = true;
+    } elseif (is_page()) {
+        $queried = get_queried_object();
+        if ($queried instanceof WP_Post && has_shortcode($queried->post_content, 'flexcore_dashboard')) {
+            $is_dashboard_page = true;
+        }
+    }
+
+    if ($is_dashboard_page && !current_user_can('manage_options')) {
+        $my_account_url = get_permalink(get_option('flexcore_my_account_page'));
+        if (empty($my_account_url)) {
+            $my_account_url = home_url('/my-account');
+        }
+        wp_redirect($my_account_url, 301);
+        exit;
+    }
+
     $pagename = get_query_var('pagename');
     
     error_log('Current page: ' . $pagename);

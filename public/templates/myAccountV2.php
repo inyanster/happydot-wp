@@ -37,7 +37,7 @@ $membership_status = FlexCore_Server_Session::get_user_membership_status();
 </div>
 
 <!-- Onboarding Steps (shown when status != 4) -->
-<div class="myaccount-infodiv" id="onboarding-section">
+<div class="myaccount-infodiv" id="onboarding-section" style="display:none;">
     <h2>Complete Your Account To Continue</h2>
     <h4>Awesome! You're almost there to become a HappyDotter!</h4>
     <p>Click on the following checkpoints to complete your registration</p>
