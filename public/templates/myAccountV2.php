@@ -5,28 +5,25 @@ $is_singpass_user = !empty($profile['metaData']['myInfoSubject']);
 $membership_status = FlexCore_Server_Session::get_user_membership_status();
 ?>
 
-<!-- Header: preferred name + account name (left) + balance/luckydraw (right), hidden initially -->
+<!-- Header: name group (left) + stats (right), hidden initially -->
 <div class="myaccount-header" style="display:none;">
     <div class="myaccount-name-wrap">
         <h2 id="myaccount-preferred-name" style="color:var(--red, #D92632); font-weight:700; margin:0;"></h2>
         <div id="myaccount-account-name"></div>
+        <div id="myaccount-joined-date" class="myaccount-joined-date"></div>
     </div>
     <div class="myaccount-stats-bar">
-        <div class="stats-item">
+        <div class="stats-line">
+            <span class="stats-label">Current Balance</span>
             <span class="stats-icon">🪙</span>
-            <div class="stats-text">
-                <span class="stats-label">Current Balance</span>
-                <span class="stats-value" id="myaccount-points">0</span>
-                <span class="stats-unit">Points</span>
-            </div>
+            <span class="stats-value" id="myaccount-points">0</span>
+            <span class="stats-unit">Points</span>
         </div>
-        <div class="stats-item">
-            <span class="stats-icon">💼</span>
-            <div class="stats-text">
-                <span class="stats-label">Lucky Draw</span>
-                <span class="stats-value" id="myaccount-chances">0</span>
-                <span class="stats-unit">Chances</span>
-            </div>
+        <div class="stats-line">
+            <span class="stats-label">Lucky Draw</span>
+            <span class="stats-icon">🎁</span>
+            <span class="stats-value" id="myaccount-chances">0</span>
+            <span class="stats-unit">Chances</span>
         </div>
     </div>
 </div>

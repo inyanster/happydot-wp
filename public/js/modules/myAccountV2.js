@@ -38,6 +38,16 @@
             } else {
                 $('#myaccount-account-name').hide().text('');
             }
+
+            // Joined date (from dateWhenMembershipStarted)
+            var joinedDate = response.data.data.dateWhenMembershipStarted;
+            if (joinedDate) {
+                var d = new Date(joinedDate);
+                if (!isNaN(d.getTime())) {
+                    $('#myaccount-joined-date').text('Joined: ' + d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }));
+                }
+            }
+
             $('.myaccount-header').show();
 
             // Handle membershipStatus = 4: hide onboarding, show membership message
