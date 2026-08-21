@@ -27,9 +27,8 @@
             var chances = response.data.data.luckyDrawChances || 0;
             $('#myaccount-points').text(points.toLocaleString());
             $('#myaccount-chances').text(chances);
-            $('.myaccount-stats-bar').show();
 
-            // Greeting header: preferred name (red) on line 1, account name (normal) on line 2
+            // Header: preferred name + account name (left) + stats (right)
             var preferredName = response.data.data.metaData && response.data.data.metaData.preferredName;
             var fullName = response.data.data.fullName || response.data.data.name || '';
             var showPreferred = !!(preferredName && preferredName !== fullName);
@@ -39,7 +38,7 @@
             } else {
                 $('#myaccount-account-name').hide().text('');
             }
-            $('.myaccount-greeting').show();
+            $('.myaccount-header').show();
 
             // Handle membershipStatus = 4: hide onboarding, show membership message
             if (response.data.data.membershipStatus == 4 || response.data.data.membershipStatus == '4') {

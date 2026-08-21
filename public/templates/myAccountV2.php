@@ -5,28 +5,28 @@ $is_singpass_user = !empty($profile['metaData']['myInfoSubject']);
 $membership_status = FlexCore_Server_Session::get_user_membership_status();
 ?>
 
-<!-- Greeting Header: preferred name (red) + account name (normal) below (hidden initially, populated by JS) -->
-<div class="myaccount-greeting" style="display:none;">
-    <h2 id="myaccount-preferred-name" style="color:#CA0D07; font-weight:600;"></h2>
-    <div id="myaccount-account-name"></div>
-</div>
-
-<!-- Top Right: Balance + Chances (hidden initially, populated by JS) -->
-<div class="myaccount-stats-bar" style="display:none;">
-    <div class="stats-item">
-        <span class="stats-icon">🪙</span>
-        <div class="stats-text">
-            <span class="stats-label">Current Balance</span>
-            <span class="stats-value" id="myaccount-points">0</span>
-            <span class="stats-unit">Points</span>
-        </div>
+<!-- Header: preferred name + account name (left) + balance/luckydraw (right), hidden initially -->
+<div class="myaccount-header" style="display:none;">
+    <div class="myaccount-name-wrap">
+        <h2 id="myaccount-preferred-name" style="color:var(--red, #D92632); font-weight:700; margin:0;"></h2>
+        <div id="myaccount-account-name"></div>
     </div>
-    <div class="stats-item">
-        <span class="stats-icon">💼</span>
-        <div class="stats-text">
-            <span class="stats-label">Lucky Draw</span>
-            <span class="stats-value" id="myaccount-chances">0</span>
-            <span class="stats-unit">Chances</span>
+    <div class="myaccount-stats-bar">
+        <div class="stats-item">
+            <span class="stats-icon">🪙</span>
+            <div class="stats-text">
+                <span class="stats-label">Current Balance</span>
+                <span class="stats-value" id="myaccount-points">0</span>
+                <span class="stats-unit">Points</span>
+            </div>
+        </div>
+        <div class="stats-item">
+            <span class="stats-icon">💼</span>
+            <div class="stats-text">
+                <span class="stats-label">Lucky Draw</span>
+                <span class="stats-value" id="myaccount-chances">0</span>
+                <span class="stats-unit">Chances</span>
+            </div>
         </div>
     </div>
 </div>

@@ -559,7 +559,8 @@ class FlexCore_Server_Public
             
             "flexcore_my_account_v2" => 'render_my_account_v2_form',
             "flexcore_lifestyle_survey_button" => 'render_lifestyle_survey_button_form',
-            "flexcore_register_myinfo" => 'render_register_myinfo_form'
+            "flexcore_register_myinfo" => 'render_register_myinfo_form',
+            "flexcore_verification_step" => 'render_verification_step'
 
 
         );
@@ -996,6 +997,25 @@ public function render_Complete_ProfileOrSurvey($atts)
         }
 
         return FlexCore_Server_Template_Loader::load_template('lifestyle-survey');
+    }
+
+    /**
+     * Render the "Complete Verification" onboarding step.
+     * Hidden for Singpass/MyInfo users (identity already verified via Singpass).
+     */
+    public function render_verification_step($atts)
+    {
+        $profile_data = FlexCore_Server_Session::get_user_profile();
+        $profile = (isset($profile_data['userData']) && is_array($profile_data['userData']))
+            ? $profile_data['userData']
+            : $profile_data;
+        $is_singpass_user = !empty($profile['metaData']['myInfoSubject']);
+
+        if ($is_singpass_user) {
+            return '';
+        }
+
+        return '<p><strong>Complete Verification</strong></p>';
     }
 
     public function render_register_myinfo_form($atts)
