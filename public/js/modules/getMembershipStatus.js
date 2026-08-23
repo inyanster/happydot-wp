@@ -14,6 +14,12 @@
           action: "get_membership_status",
           nonce: flexcoreServerAjax.membershipStatusNonce,
         },
+        beforeSend: function () {
+          window.FlexcoreSpinner && window.FlexcoreSpinner.show();
+        },
+        complete: function () {
+          window.FlexcoreSpinner && window.FlexcoreSpinner.hide();
+        },
         success: function (response) {
           if (response.success) {
             // console.log("Membership status fetched successfully:", response);

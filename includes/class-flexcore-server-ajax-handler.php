@@ -43,33 +43,6 @@ class FlexCore_Server_Ajax_Handler
 
         // Add nonce verification for AJAX endpoints
         $this->register_ajax_endpoints();
-
-        error_log("Handling get membership status request");
-        // Check if user is authenticated
-        if (FlexCore_Server_Session::is_authenticated()) {
-
-            // Get the token from session
-            $token = FlexCore_Server_Session::get_token();
-            $api = new FlexCore_Server_API();
-
-            // Call API to get membership status
-            $response = $api->get_membership_status($token);
-            error_log("API response for membership status: " . print_r($response, true));
-            if (is_wp_error($response)) {
-                wp_send_json_error(array('message' => $response['message'], 'errors' => $response['errors'] ?? []));
-                return;
-            }
-
-            if (!empty($response['success']) && isset($response['membershipstatus'])) {
-                FlexCore_Server_Session::set_user_membership_status($response['membershipstatus']);
-
-                error_log("Status from session: " . print_r(FlexCore_Server_Session::get_user_membership_status(), true));
-                // wp_send_json_success(array(
-                //     'message' => $response['message'],
-                //     'membershipstatus' => $response['membershipstatus']
-                // ));
-            }
-        }
     }
 
     /**

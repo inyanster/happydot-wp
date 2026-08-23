@@ -28,7 +28,7 @@ if (!defined('WPINC')) {
 /**
  * Currently plugin version.
  */
-define('FLEXCORE_SERVER_VERSION', '1.0.2');
+define('FLEXCORE_SERVER_VERSION', '1.0.3');
 
 /**
  * The code that runs during plugin activation.
@@ -131,6 +131,15 @@ add_action('template_redirect', function () {
         exit;
     }
     $membership_status = FlexCore_Server_Session::get_user_membership_status();
+    $refer_friend_pages = array('refer-a-friend', 'refer-a-friend-complete-your-account', 'refer-a-friend-how-it-works');
+    if (in_array($pagename, $refer_friend_pages, true) && FlexCore_Server_Session::is_authenticated() && empty($membership_status)) {
+        $api = new FlexCore_Server_API();
+        $resp = $api->get_membership_status(FlexCore_Server_Session::get_token());
+        if (!is_wp_error($resp) && !empty($resp['success']) && isset($resp['membershipstatus'])) {
+            $membership_status = $resp['membershipstatus'];
+            FlexCore_Server_Session::set_user_membership_status($membership_status);
+        }
+    }
     
   if ($pagename == 'refer-a-friend-complete-your-account' && $membership_status == "4"
         ) {

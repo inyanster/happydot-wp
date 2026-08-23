@@ -204,4 +204,20 @@
         }, 1000);
     });
 
+    window.FlexcoreSpinner = (function () {
+        var overlay = null;
+        function ensure() {
+            if (!overlay) {
+                overlay = document.createElement('div');
+                overlay.className = 'flexcore-loading-overlay';
+                overlay.innerHTML = '<div class="flexcore-spinner"></div>';
+                document.body.appendChild(overlay);
+            }
+            return overlay;
+        }
+        return {
+            show: function () { ensure().style.display = 'flex'; },
+            hide: function () { if (overlay) overlay.style.display = 'none'; }
+        };
+    })();
 })(jQuery);

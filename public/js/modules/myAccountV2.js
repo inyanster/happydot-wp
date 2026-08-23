@@ -19,6 +19,12 @@
           action: "flexcore_get_account_details",
           nonce: flexcoreServerAjax.myAccountV2Nonce,
         },
+        beforeSend: function () {
+          window.FlexcoreSpinner && window.FlexcoreSpinner.show();
+        },
+        complete: function () {
+          window.FlexcoreSpinner && window.FlexcoreSpinner.hide();
+        },
         success: function (response) {
           if (response.success && response.data) {
             

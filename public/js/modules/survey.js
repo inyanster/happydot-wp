@@ -21,6 +21,12 @@
                     action: 'flexcore_get_survey',
                     nonce: flexcoreServerAjax.surveyNonce
                 },
+                beforeSend: function () {
+                    window.FlexcoreSpinner && window.FlexcoreSpinner.show();
+                },
+                complete: function () {
+                    window.FlexcoreSpinner && window.FlexcoreSpinner.hide();
+                },
                 success: function(response) {
                     let surveyUrl= response.data.data;
                     window.location.href = surveyUrl
