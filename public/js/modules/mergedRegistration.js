@@ -694,6 +694,19 @@ if (utm_string_present && referral_code_absent) {
           $(".citizen-error").hide();
         }
       }
+      // Marital Status
+      if (!$("#marital_status").val()) {
+        $("#marital_status").addClass("has-error").removeClass("is-valid");
+        if ($(".maritalStatus-error").length) {
+          $(".maritalStatus-error").text("Marital Status is required.").show();
+        }
+        valid = false;
+      } else {
+        $("#marital_status").removeClass("has-error");
+        if ($(".maritalStatus-error").length) {
+          $(".maritalStatus-error").hide();
+        }
+      }
       return valid;
     },
 

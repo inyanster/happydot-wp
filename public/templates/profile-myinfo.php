@@ -409,6 +409,12 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 btn.prop('disabled', false);
                 return;
             }
+            if (!$('#marital_status').val()) {
+                $('#marital_status').addClass('has-error');
+                msg.removeClass('success').addClass('error').html('Please select your marital status.').show();
+                btn.prop('disabled', false);
+                return;
+            }
             if (mobileVal.startsWith('+65')) mobileVal = mobileVal.substring(3);
 
             var formData = {

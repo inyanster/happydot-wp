@@ -339,6 +339,16 @@ validatePostalCode: function () {
         isValid = false;
       }
 
+      // Marital Status
+      if (!$("#marital_status").val()) {
+        $("#marital_status").addClass("has-error").removeClass("is-valid");
+        $(".maritalStatus-error").text("Marital Status is required.").show();
+        isValid = false;
+      } else {
+        $("#marital_status").removeClass("has-error");
+        $(".maritalStatus-error").text("").hide();
+      }
+
       // Consent checkbox
       if (!$("#consent").is(":checked")) {
         $("#consent").addClass("has-error");
