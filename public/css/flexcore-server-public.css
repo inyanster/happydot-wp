@@ -589,3 +589,11 @@
 .profile-step.verification-step.singpass-greyed .heading-wrap {
     color: #888;
 }
+
+/* My Account V2 - verification step has no number circle, so its connector line
+   must span the full height (incl. the 32px the circle would cover) to keep the
+   vertical line continuous from step 2 down to step 3. */
+.profile-step.verification-step:after {
+    top: 0 !important;
+    height: 100% !important;
+}
