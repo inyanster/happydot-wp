@@ -832,11 +832,13 @@ if (utm_string_present && referral_code_absent) {
   }
 
   function isSequentialRun(digits) {
-    if (digits.length < 2) return false;
-    const diff = digits.charCodeAt(1) - digits.charCodeAt(0);
+    // First digit is the 8/9 prefix — check the remaining digits for a +/-1 sequential run
+    const seq = digits.slice(1);
+    if (seq.length < 2) return false;
+    const diff = seq.charCodeAt(1) - seq.charCodeAt(0);
     if (diff !== 1 && diff !== -1) return false;
-    for (let i = 1; i < digits.length - 1; i++) {
-      if (digits.charCodeAt(i + 1) - digits.charCodeAt(i) !== diff) return false;
+    for (let i = 1; i < seq.length - 1; i++) {
+      if (seq.charCodeAt(i + 1) - seq.charCodeAt(i) !== diff) return false;
     }
     return true;
   }

@@ -8,18 +8,18 @@ $membership_status = FlexCore_Server_Session::get_user_membership_status();
 <!-- Header: name group (left) + balance/stats (right), hidden initially -->
 <div class="myaccount-header" style="display:none;">
     <div class="myaccount-name-wrap">
-        <span class="myaccount-label">Preferred Name</span>
         <h2 id="myaccount-preferred-name" style="color:var(--red, #D92632); font-weight:700; margin:0;"></h2>
         <div id="myaccount-account-name"></div>
         <div id="myaccount-joined-date" class="myaccount-joined-date"></div>
     </div>
     <div class="myaccount-stats-bar">
         <div class="myaccount-balance">
-            <span class="myaccount-label">Current Balance <span class="stats-icon">🪙</span></span>
-            <span class="balance-value">
+            <div class="balance-line">
+                <span class="balance-label">Current Balance</span>
+                <span class="balance-icon">🪙</span>
                 <span class="balance-number" id="myaccount-points">0</span>
                 <span class="balance-unit">Points</span>
-            </span>
+            </div>
             <div class="points-expiry" id="myaccount-points-expiry" style="display:none;"></div>
         </div>
         <div class="myaccount-stat-boxes">
@@ -87,6 +87,7 @@ $membership_status = FlexCore_Server_Session::get_user_membership_status();
 
         <!-- Unnumbered: Complete Profile Verification with Singpass (between step 2 and step 3) -->
         <div class="profile-step verification-step<?php echo $is_singpass_user ? ' singpass-greyed' : ''; ?>">
+            <div class="profile-step-number" style="visibility:hidden;"></div>
             <div class="profile-step-info<?php echo $is_singpass_user ? ' disable' : ''; ?>">
                 <div class="heading-wrap">
                     <h3>COMPLETE PROFILE VERIFICATION WITH SINGPASS <span class="verification-points">+50 HappyPoints</span></h3>
