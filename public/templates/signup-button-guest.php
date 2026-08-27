@@ -23,5 +23,5 @@
 
 <div class="hd-without-login">
     <a class="hd-btn" href="<?php echo esc_url(get_permalink(get_option('flexcore_login_page'))); ?>" class="hd-btn">Login</a>
-    <a class="hd-btn" href="<?php echo esc_url(get_permalink(get_option('flexcore_register_page'))); ?>" class="hd-btn">Signup</a>
+    <a class="hd-btn" href="<?php echo esc_url(get_permalink(get_option('flexcore_register_page'))); ?>" class="hd-btn">SIGNUP via Singpass</a>
 </div>

@@ -1015,7 +1015,7 @@ public function render_Complete_ProfileOrSurvey($atts)
             return '';
         }
 
-        return '<p><strong>Complete Verification</strong></p>';
+        return '<p><strong>Complete Verification with Singpass</strong></p>';
     }
 
     public function render_register_myinfo_form($atts)

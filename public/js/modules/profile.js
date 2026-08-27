@@ -297,6 +297,30 @@ validatePostalCode: function () {
       e.target.value = value;
     },
 
+    validateMobile: function () {
+      const input = $("#mobile");
+      const value = input.val().trim();
+      const digits = mobileDigits(value);
+
+      let errorMsg = "";
+      if (digits.length < 8) {
+        errorMsg = "Mobile number must be at least 8 digits.";
+      } else if (!/^[89]/.test(digits)) {
+        errorMsg = "Mobile number must start with 8 or 9.";
+      } else if (isSequentialRun(digits)) {
+        errorMsg = "Mobile number cannot be a sequential run of digits (e.g. 98765432).";
+      } else if (isRepeatedPattern(digits)) {
+        errorMsg = "Mobile number cannot be a repeated digit or pattern (e.g. 88888888).";
+      }
+
+      if (errorMsg) {
+        Profile.setFieldError("mobile", errorMsg);
+        return false;
+      }
+      Profile.setFieldError("mobile", "");
+      return true;
+    },
+
     validateFields: function () {
       let isValid = true;
       const fields = [
@@ -326,11 +350,7 @@ validatePostalCode: function () {
       }
 
       // Additional validation: Mobile
-      if (!/^\+?[\d\s-]{8,}$/.test($("#mobile").val())) {
-        Profile.setFieldError(
-          "mobile",
-          flexcoreServerAjax.i18n.invalidMobileNumber
-        );
+      if (!Profile.validateMobile()) {
         isValid = false;
       }
 
@@ -470,6 +490,56 @@ validatePostalCode: function () {
       });
     },
   };
+
+  function mobileDigits(value) {
+    let digits = String(value || "").replace(/\D/g, "");
+    // Strip the Singapore +65 country code when present (e.g. "+65" or "65" prefix)
+    if (digits.length > 8 && digits.indexOf("65") === 0) {
+      digits = digits.slice(2);
+    }
+    return digits;
+  }
+
+  function isSequentialRun(digits) {
+    if (digits.length < 2) return false;
+    const diff = digits.charCodeAt(1) - digits.charCodeAt(0);
+    if (diff !== 1 && diff !== -1) return false;
+    for (let i = 1; i < digits.length - 1; i++) {
+      if (digits.charCodeAt(i + 1) - digits.charCodeAt(i) !== diff) return false;
+    }
+    return true;
+  }
+
+  function isRepeatedPattern(digits) {
+    if (digits.length < 2) return false;
+    // All digits identical (e.g. 88888888, 99999999)
+    if (/^(\d)\1+$/.test(digits)) return true;
+    // Predominantly one digit — same digit in all but at most one position (e.g. 88888882)
+    const counts = {};
+    for (let i = 0; i < digits.length; i++) {
+      const c = digits.charAt(i);
+      counts[c] = (counts[c] || 0) + 1;
+    }
+    let maxCount = 0;
+    for (const k in counts) {
+      if (counts[k] > maxCount) maxCount = counts[k];
+    }
+    if (maxCount >= digits.length - 1) return true;
+    // Repeated 2-digit pattern (e.g. 89898989, 91919191)
+    if (digits.length >= 4 && digits.length % 2 === 0) {
+      const pair = digits.slice(0, 2);
+      let repeated = true;
+      for (let i = 0; i < digits.length; i += 2) {
+        if (digits.substr(i, 2) !== pair) {
+          repeated = false;
+          break;
+        }
+      }
+      if (repeated) return true;
+    }
+    return false;
+  }
+
   /**
    * Checks if all required fields are filled
    */

@@ -209,7 +209,7 @@ if (!defined('ABSPATH')) {
             <div class="hd-col-6">
                 <div class="hd-form-group">
                     <label class="hd-label" for="dob">
-                        <?php esc_html_e('Date of Birth', 'flexcore-server'); ?><span>*</span>
+                        <?php esc_html_e('Date of Birth', 'flexcore-server'); ?><span>*</span> (Date must be in DD/MM/YYYY format)
                     </label>
                     <input class="hd-formfild dob-input"
                            type="text"

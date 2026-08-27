@@ -32,7 +32,18 @@
 
     handleReferralAndUTM: function () {
       const urlParams = new URLSearchParams(window.location.search);
-      const referralCode = urlParams.get("referral_code");
+      let referralCode = urlParams.get("referral_code");
+      // Restore the referral code persisted before the Singpass MyInfo redirect —
+      // the callback URL no longer carries ?referral_code=... so fall back to storage.
+      if (!referralCode) {
+        try {
+          referralCode =
+            sessionStorage.getItem("flexcore_referral_code") ||
+            localStorage.getItem("flexcore_referral_code");
+        } catch (e) {
+          referralCode = null;
+        }
+      }
       const referralInput = document.getElementById("referral_code");
       const referralLabel = document.getElementById("referral_code_label");
       const sourceSelect = document.getElementById("register_source");
@@ -475,33 +486,34 @@ if (utm_string_present && referral_code_absent) {
     // },
 
     validateMobile: function () {
-  const input = $("#mobile");
-  const value = input.val().trim();
-  const errorDiv = $(".mobileNo-error");
+      const input = $("#mobile");
+      const value = input.val().trim();
+      const errorDiv = $(".mobileNo-error");
 
-  // Remove all non-digit characters and store clean value
-  const cleanValue = value.replace(/\D/g, "");
-  this.value = cleanValue;
+      // Strip non-digits (and the Singapore +65 country code when present)
+      const digits = mobileDigits(value);
 
-  let isValid = false;
+      let errorMsg = "";
+      if (digits.length < 8) {
+        errorMsg = "Mobile number must be at least 8 digits.";
+      } else if (!/^[89]/.test(digits)) {
+        errorMsg = "Mobile number must start with 8 or 9.";
+      } else if (isSequentialRun(digits)) {
+        errorMsg = "Mobile number cannot be a sequential run of digits (e.g. 98765432).";
+      } else if (isRepeatedPattern(digits)) {
+        errorMsg = "Mobile number cannot be a repeated digit or pattern (e.g. 88888888).";
+      }
 
-  // Singapore number format: must start with 8 or 9 and have 8 digits
-  if (value.startsWith("+")) {
-    isValid = /^\+65[89]\d{7}$/.test(value);
-  } else {
-    isValid = /^[89]\d{7}$/.test(value);
-  }
+      if (errorMsg) {
+        input.addClass("has-error").removeClass("is-valid");
+        errorDiv.text(errorMsg).show();
+        return false;
+      }
 
-  if (isValid) {
-    input.addClass("is-valid").removeClass("has-error");
-    errorDiv.text("").hide();
-    return true;
-  } else {
-    input.addClass("has-error").removeClass("is-valid");
-    errorDiv.text("Please enter a valid Singapore mobile number starting with 8 or 9.").show();
-    return false;
-  }
-},
+      input.addClass("is-valid").removeClass("has-error");
+      errorDiv.text("").hide();
+      return true;
+    },
 
 
     // validatePostalCode: function () {
@@ -760,6 +772,11 @@ if (utm_string_present && referral_code_absent) {
         },
         success: function (response) {
           if (response.success) {
+            // Clear the persisted referral code once registration completes
+            try {
+              sessionStorage.removeItem("flexcore_referral_code");
+              localStorage.removeItem("flexcore_referral_code");
+            } catch (e) {}
             messageDiv
               .removeClass("error")
               .addClass("success")
@@ -803,6 +820,55 @@ if (utm_string_present && referral_code_absent) {
     // value = dd/mm/yyyy
     const [day, month, year] = value.split("/");
     return `${year}-${month}-${day}`; // yyyy-mm-dd
+  }
+
+  function mobileDigits(value) {
+    let digits = String(value || "").replace(/\D/g, "");
+    // Strip the Singapore +65 country code when present (e.g. "+65" or "65" prefix)
+    if (digits.length > 8 && digits.indexOf("65") === 0) {
+      digits = digits.slice(2);
+    }
+    return digits;
+  }
+
+  function isSequentialRun(digits) {
+    if (digits.length < 2) return false;
+    const diff = digits.charCodeAt(1) - digits.charCodeAt(0);
+    if (diff !== 1 && diff !== -1) return false;
+    for (let i = 1; i < digits.length - 1; i++) {
+      if (digits.charCodeAt(i + 1) - digits.charCodeAt(i) !== diff) return false;
+    }
+    return true;
+  }
+
+  function isRepeatedPattern(digits) {
+    if (digits.length < 2) return false;
+    // All digits identical (e.g. 88888888, 99999999)
+    if (/^(\d)\1+$/.test(digits)) return true;
+    // Predominantly one digit — same digit in all but at most one position (e.g. 88888882)
+    const counts = {};
+    for (let i = 0; i < digits.length; i++) {
+      const c = digits.charAt(i);
+      counts[c] = (counts[c] || 0) + 1;
+    }
+    let maxCount = 0;
+    for (const k in counts) {
+      if (counts[k] > maxCount) maxCount = counts[k];
+    }
+    if (maxCount >= digits.length - 1) return true;
+    // Repeated 2-digit pattern (e.g. 89898989, 91919191)
+    if (digits.length >= 4 && digits.length % 2 === 0) {
+      const pair = digits.slice(0, 2);
+      let repeated = true;
+      for (let i = 0; i < digits.length; i += 2) {
+        if (digits.substr(i, 2) !== pair) {
+          repeated = false;
+          break;
+        }
+      }
+      if (repeated) return true;
+    }
+    return false;
   }
 
   $(document).ready(function () {

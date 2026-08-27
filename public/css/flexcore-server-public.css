@@ -481,3 +481,98 @@
 @keyframes flexcore-spin {
     to { transform: rotate(360deg); }
 }
+
+/* My Account V2 - header label (small caps grey) */
+.myaccount-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #999;
+}
+
+/* My Account V2 - Balance block (right) */
+.myaccount-balance {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+.myaccount-balance .balance-value {
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+.myaccount-balance .balance-value .balance-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: #D92632;
+}
+.myaccount-balance .balance-value .balance-unit {
+    font-size: 16px;
+    font-weight: 700;
+    color: #D92632;
+}
+.points-expiry {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    color: #666;
+    margin-top: 2px;
+}
+
+/* My Account V2 - three stat boxes in a row (icon left, number right, label below) */
+.myaccount-stat-boxes {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+.myaccount-stat-boxes .stat-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 130px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+}
+.myaccount-stat-boxes .stat-box-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+}
+.myaccount-stat-boxes .stat-icon {
+    font-size: 18px;
+}
+.myaccount-stat-boxes .stat-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #222;
+}
+.myaccount-stat-boxes .stat-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* My Account V2 - "+50 HappyPoints" red badge inside verification heading */
+.profile-step.verification-step .verification-points {
+    color: #D92632;
+}
+
+/* My Account V2 - greyed-out verification box (Singpass users) */
+.profile-step.verification-step.singpass-greyed {
+    opacity: 0.45;
+}
+.profile-step.verification-step.singpass-greyed .heading-wrap {
+    color: #888;
+}

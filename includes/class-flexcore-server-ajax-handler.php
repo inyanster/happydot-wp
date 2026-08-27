@@ -1384,6 +1384,9 @@ class FlexCore_Server_Ajax_Handler
             if (!is_wp_error($points_response) && !empty($points_response['success'])) {
                 $merged_data['currentPoints'] = $points_response['data']['currentPoints'] ?? 0;
                 $merged_data['luckyDrawChances'] = $points_response['data']['totalLuckyDrawChance'] ?? 0;
+                $merged_data['gameChances'] = $points_response['data']['gameChances'] ?? 0;
+                $merged_data['totalSurveyDone'] = $points_response['data']['totalSurveyDone'] ?? 0;
+                $merged_data['pointsExpiryNotice'] = $points_response['data']['pointsExpiryNotice'] ?? '';
             }
             if (!is_wp_error($message_response) && !empty($message_response['success'])) {
                 $merged_data['membershipMessageHtml'] = $message_response['data']['htmlContent'] ?? null;

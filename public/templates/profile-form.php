@@ -150,7 +150,7 @@ cursor: pointer;}
         </div>
 
         <div class="hd-form-group">
-            <label class="hd-label" for="dob"><?php esc_html_e('Date of Birth', 'flexcore-server'); ?><span style="color:red; font-size:20px; margin-left:2px">*</span>
+            <label class="hd-label" for="dob"><?php esc_html_e('Date of Birth', 'flexcore-server'); ?><span style="color:red; font-size:20px; margin-left:2px">*</span> (Date must be in DD/MM/YYYY format)
                 
             </label>
            <input class="hd-formfild dob-input" type="date" id="dob" name="dob"

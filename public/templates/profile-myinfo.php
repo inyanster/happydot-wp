@@ -109,7 +109,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
     <!-- Promo message (hidden by default, shown if singpassPointFlag !== '1') -->
     <div id="myinfo-promo" style="display:none; background:#FFF3CD; border:1px solid #FFECB5; border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#856404; font-size:14px;">
-        <span id="myinfo-promo-text">Verify with Singpass today and be awarded with 100 points immediately!</span>
+        <span id="myinfo-promo-text">Verify with Singpass today and be awarded with 50 points immediately!</span>
     </div>
 
     <!-- MyInfo unavailable notice -->
@@ -142,7 +142,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         <!-- IMMUTABLE: DOB | Citizenship -->
         <div style="display:flex; gap:16px; flex-wrap:wrap;">
             <div class="hd-form-group" style="flex:1; min-width:200px;">
-                <label>Date of Birth <span style="color:red">*</span></label>
+                <label>Date of Birth <span style="color:red">*</span> (Date must be in DD/MM/YYYY format)</label>
                 <input class="hd-formfild field-immutable" type="text" id="dob" readonly>
             </div>
             <div class="hd-form-group" style="flex:1; min-width:200px;">
@@ -168,6 +168,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                     <option value="separated">Separated</option>
                     <option value="widowed">Widowed</option>
                 </select>
+                <div class="field-error maritalStatus-error" style="display:none;"></div>
             </div>
         </div>
 
@@ -225,6 +226,72 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
     var apiBase = 'https://staging.flexcore.theadventus.com/api/v1';
     var _profileMeta = null; // cached profile metadata
+
+    function mobileDigits(value) {
+        var digits = String(value || '').replace(/\D/g, '');
+        // Strip the Singapore +65 country code when present (e.g. "+65" or "65" prefix)
+        if (digits.length > 8 && digits.indexOf('65') === 0) {
+            digits = digits.slice(2);
+        }
+        return digits;
+    }
+
+    function isSequentialRun(digits) {
+        if (digits.length < 2) return false;
+        var diff = digits.charCodeAt(1) - digits.charCodeAt(0);
+        if (diff !== 1 && diff !== -1) return false;
+        for (var i = 1; i < digits.length - 1; i++) {
+            if (digits.charCodeAt(i + 1) - digits.charCodeAt(i) !== diff) return false;
+        }
+        return true;
+    }
+
+    function isRepeatedPattern(digits) {
+        if (digits.length < 2) return false;
+        // All digits identical (e.g. 88888888, 99999999)
+        if (/^(\d)\1+$/.test(digits)) return true;
+        // Predominantly one digit — same digit in all but at most one position (e.g. 88888882)
+        var counts = {};
+        for (var i = 0; i < digits.length; i++) {
+            var c = digits.charAt(i);
+            counts[c] = (counts[c] || 0) + 1;
+        }
+        var maxCount = 0;
+        for (var k in counts) {
+            if (counts[k] > maxCount) maxCount = counts[k];
+        }
+        if (maxCount >= digits.length - 1) return true;
+        // Repeated 2-digit pattern (e.g. 89898989, 91919191)
+        if (digits.length >= 4 && digits.length % 2 === 0) {
+            var pair = digits.slice(0, 2);
+            var repeated = true;
+            for (var j = 0; j < digits.length; j += 2) {
+                if (digits.substr(j, 2) !== pair) {
+                    repeated = false;
+                    break;
+                }
+            }
+            if (repeated) return true;
+        }
+        return false;
+    }
+
+    function validateMobileNumber(value) {
+        var digits = mobileDigits(value);
+        if (digits.length < 8) {
+            return { valid: false, message: 'Mobile number must be at least 8 digits.' };
+        }
+        if (!/^[89]/.test(digits)) {
+            return { valid: false, message: 'Mobile number must start with 8 or 9.' };
+        }
+        if (isSequentialRun(digits)) {
+            return { valid: false, message: 'Mobile number cannot be a sequential run of digits (e.g. 98765432).' };
+        }
+        if (isRepeatedPattern(digits)) {
+            return { valid: false, message: 'Mobile number cannot be a repeated digit or pattern (e.g. 88888888).' };
+        }
+        return { valid: true, message: '' };
+    }
 
     /**
      * Pre-fill the MyInfo immutable fields on the form from mapped fields.
@@ -312,22 +379,26 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         // Live validation — mobile number
         $('#mobile').on('input change', function() {
             var val = $(this).val().trim();
-            var clean = val.replace(/\D/g, '');
-            var isValid = false;
-            if (val.startsWith('+')) {
-                isValid = /^\+65[89]\d{7}$/.test(val);
-            } else {
-                isValid = /^[89]\d{7}$/.test(val);
-            }
-            if (isValid) {
-                $(this).removeClass('has-error').addClass('is-valid');
-                $('.mobileNo-error').hide();
-            } else if (val.length > 0) {
-                $(this).addClass('has-error').removeClass('is-valid');
-                $('.mobileNo-error').text('Please enter a valid Singapore mobile number starting with 8 or 9.').show();
-            } else {
+            if (val.length === 0) {
                 $(this).removeClass('has-error is-valid');
                 $('.mobileNo-error').hide();
+                return;
+            }
+            var result = validateMobileNumber(val);
+            if (result.valid) {
+                $(this).removeClass('has-error').addClass('is-valid');
+                $('.mobileNo-error').hide();
+            } else {
+                $(this).addClass('has-error').removeClass('is-valid');
+                $('.mobileNo-error').text(result.message).show();
+            }
+        });
+
+        // Live validation — marital status (clear red highlight once a value is chosen)
+        $('#marital_status').on('change', function() {
+            if ($(this).val()) {
+                $(this).removeClass('has-error');
+                $('.maritalStatus-error').hide();
             }
         });
 
@@ -394,9 +465,10 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
             // Client-side validation
             var mobileEl = $('#mobile');
-            if (!/^[89]\d{7}$/.test(mobileVal) && !/^\+65[89]\d{7}$/.test(mobileVal)) {
+            var mobileResult = validateMobileNumber(mobileVal);
+            if (!mobileResult.valid) {
                 mobileEl.addClass('has-error');
-                $('.mobileNo-error').text('Please enter a valid Singapore mobile number starting with 8 or 9.').show();
+                $('.mobileNo-error').text(mobileResult.message).show();
                 msg.removeClass('success').addClass('error').html('Please fix the errors below.').show();
                 btn.prop('disabled', false);
                 return;
@@ -411,6 +483,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             }
             if (!$('#marital_status').val()) {
                 $('#marital_status').addClass('has-error');
+                $('.maritalStatus-error').text('Please select your marital status.').show();
                 msg.removeClass('success').addClass('error').html('Please select your marital status.').show();
                 btn.prop('disabled', false);
                 return;
@@ -447,9 +520,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 success: function(res) {
                     if (res.success) {
                         $('#myinfo_flow_id').val('');
-                        // Check backend response for points message (not just flowId presence)
-                        var pointsMsg = (res.data && res.data.pointsAwarded) ? ' ' + res.data.pointsAwarded + ' points awarded!' : (flowId ? ' 100 points awarded!' : '');
-                        var msgText = 'Profile updated successfully!' + pointsMsg;
+                        var msgText = 'Profile updated successfully! 50 points awarded! <a href="/my-account/">Back to My Account page</a>';
                         msg.removeClass('error').addClass('success').html(msgText).show();
                         loadProfileData();
                     } else {
@@ -498,7 +569,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
         function onMyInfoPulled() {
             // Points awarded on form SAVE, not on MyInfo pull
-            $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your 100 points.');
+            $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your 50 points.');
             $('#myinfo-promo').show();
         }
 

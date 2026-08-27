@@ -5,25 +5,45 @@ $is_singpass_user = !empty($profile['metaData']['myInfoSubject']);
 $membership_status = FlexCore_Server_Session::get_user_membership_status();
 ?>
 
-<!-- Header: name group (left) + stats (right), hidden initially -->
+<!-- Header: name group (left) + balance/stats (right), hidden initially -->
 <div class="myaccount-header" style="display:none;">
     <div class="myaccount-name-wrap">
+        <span class="myaccount-label">Preferred Name</span>
         <h2 id="myaccount-preferred-name" style="color:var(--red, #D92632); font-weight:700; margin:0;"></h2>
         <div id="myaccount-account-name"></div>
         <div id="myaccount-joined-date" class="myaccount-joined-date"></div>
     </div>
     <div class="myaccount-stats-bar">
-        <div class="stats-line">
-            <span class="stats-label">Current Balance</span>
-            <span class="stats-icon">🪙</span>
-            <span class="stats-value" id="myaccount-points">0</span>
-            <span class="stats-unit">Points</span>
+        <div class="myaccount-balance">
+            <span class="myaccount-label">Current Balance <span class="stats-icon">🪙</span></span>
+            <span class="balance-value">
+                <span class="balance-number" id="myaccount-points">0</span>
+                <span class="balance-unit">Points</span>
+            </span>
+            <div class="points-expiry" id="myaccount-points-expiry" style="display:none;"></div>
         </div>
-        <div class="stats-line">
-            <span class="stats-label">Lucky Draw</span>
-            <span class="stats-icon">🎁</span>
-            <span class="stats-value" id="myaccount-chances">0</span>
-            <span class="stats-unit">Chances</span>
+        <div class="myaccount-stat-boxes">
+            <div class="stat-box">
+                <div class="stat-box-top">
+                    <span class="stat-icon">💬</span>
+                    <span class="stat-value" id="myaccount-surveys-done">0</span>
+                </div>
+                <span class="stat-label">Surveys completed</span>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-top">
+                    <span class="stat-icon">🎁</span>
+                    <span class="stat-value" id="myaccount-lucky-draw">0</span>
+                </div>
+                <span class="stat-label">Lucky Draw</span>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-top">
+                    <span class="stat-icon">🧰</span>
+                    <span class="stat-value" id="myaccount-game-chances">0</span>
+                </div>
+                <span class="stat-label">Chances</span>
+            </div>
         </div>
     </div>
 </div>
@@ -45,64 +65,43 @@ $membership_status = FlexCore_Server_Session::get_user_membership_status();
             <div class="profile-step-number completed"><i aria-hidden="true" class="icon icon-check"></i></div>
             <div class="profile-step-info">
                 <div class="heading-wrap">
-                    <h3>Hello & Welcome!</h3>
+                    <h3>HELLO &amp; WELCOME</h3>
                     <p>Your account is successfully created.</p>
                 </div>
             </div>
         </div>
 
-        <!-- Step 2: Complete Profile -->
-        <div class="profile-step account-step">
+        <!-- Step 2: Lifestyle Survey -->
+        <div class="profile-step survey-step">
             <div class="profile-step-number">2</div>
             <div class="profile-step-info disable">
                 <div class="heading-wrap">
-                    <h3>Complete Your Profile</h3>
-                    <p>Your profile helps us send you the most relevant surveys. Keep it accurate and up-to-date.</p>
+                    <h3>YOUR LIFESTYLE SURVEY</h3>
+                    <p>Share a bit more about yourself and get your Welcome Voucher</p>
                 </div>
                 <div class="content">
-                    <a href="/my-profile/" class="hd-btn">Complete</a>
+                    <button class="hd-btn" id="take_survey">TAKE PART</button>
                 </div>
             </div>
         </div>
 
-        <!-- Step 3: Lifestyle Survey -->
-        <div class="profile-step survey-step">
-            <div class="profile-step-number">3</div>
-            <div class="profile-step-info disable">
+        <!-- Unnumbered: Complete Profile Verification with Singpass (between step 2 and step 3) -->
+        <div class="profile-step verification-step<?php echo $is_singpass_user ? ' singpass-greyed' : ''; ?>">
+            <div class="profile-step-info<?php echo $is_singpass_user ? ' disable' : ''; ?>">
                 <div class="heading-wrap">
-                    <h3>Take Part In Lifestyle Survey</h3>
-                    <p>Share a bit more about yourself and choose your Welcome Voucher.</p>
-                </div>
-                <div class="content">
-                    <button class="hd-btn" id="take_survey">Take Part</button>
+                    <h3>COMPLETE PROFILE VERIFICATION WITH SINGPASS <span class="verification-points">+50 HappyPoints</span></h3>
+                    <p>Quick profile verification by clicking on Retrieve Myinfo with Singpass on My Profile page.</p>
                 </div>
             </div>
         </div>
-
-        <?php if (!$is_singpass_user): ?>
-        <!-- Step 4: Verification (non-Singpass only) -->
-        <div class="profile-step verification-step">
-            <div class="profile-step-number">4</div>
-            <div class="profile-step-info disable">
-                <div class="heading-wrap">
-                    <h3>Complete Account Verification</h3>
-                    <p>A quick confirmation of your details against your NRIC to ensure everything is in order*</p>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
 
         <!-- Final Step: Get Started -->
         <div class="profile-step get-started-step">
-            <div class="profile-step-number"><?php echo $is_singpass_user ? '4' : '5'; ?></div>
+            <div class="profile-step-number">3</div>
             <div class="profile-step-info">
                 <div class="heading-wrap">
-                    <h3>Get Started</h3>
+                    <h3>GET STARTED!</h3>
                     <p>Receive your welcome voucher, start doing surveys and earn happypoints</p>
-                    <?php if (!$is_singpass_user): ?>
-                    <p><br><br>*Note: A simple ID confirmation is necessary. Our team will be reaching out to you - please do extend your kind cooperation</p>
-                    <p>(HappyDot.sg is part of RySense, a Singapore based research organization where we pride ourselves in the authenticity of our data collection. Hence, verifying our member's details is part of our onboarding process in making sure our community is genuine and legitimate.)</p>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
