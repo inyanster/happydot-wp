@@ -583,7 +583,7 @@
 }
 
 /* My Account V2 - greyed-out verification box (Singpass users) */
-.profile-step.verification-step.singpass-greyed {
+.profile-step.verification-step.singpass-greyed .profile-step-info {
     opacity: 0.45;
 }
 .profile-step.verification-step.singpass-greyed .heading-wrap {
