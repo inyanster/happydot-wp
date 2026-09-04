@@ -39,7 +39,7 @@ $membership_status = FlexCore_Server_Session::get_user_membership_status();
             </div>
             <div class="stat-box">
                 <div class="stat-box-top">
-                    <span class="stat-icon">🧰</span>
+                    <img class="stat-icon-img" src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/chest-icon.png'); ?>" alt="Chances">
                     <span class="stat-value" id="myaccount-game-chances">0</span>
                 </div>
                 <span class="stat-label">Chances</span>

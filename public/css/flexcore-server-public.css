@@ -563,6 +563,11 @@
 .myaccount-stat-boxes .stat-icon {
     font-size: 18px;
 }
+.myaccount-stat-boxes .stat-icon-img {
+    height: 18px;
+    width: auto;
+    display: block;
+}
 .myaccount-stat-boxes .stat-value {
     font-family: 'Montserrat', sans-serif;
     font-size: 22px;
