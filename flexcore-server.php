@@ -28,7 +28,7 @@ if (!defined('WPINC')) {
 /**
  * Currently plugin version.
  */
-define('FLEXCORE_SERVER_VERSION', '1.0.7');
+define('FLEXCORE_SERVER_VERSION', '1.0.8');
 
 /**
  * The code that runs during plugin activation.
