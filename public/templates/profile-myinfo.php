@@ -226,6 +226,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
     var apiBase = 'https://staging.flexcore.theadventus.com/api/v1';
     var _profileMeta = null; // cached profile metadata
+    var _profileId = null;
 
     function mobileDigits(value) {
         var digits = String(value || '').replace(/\D/g, '');
@@ -338,6 +339,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 if (!res.success || !res.data) { if (callback) callback(); return; }
                 var d = res.data, meta = d.metaData || {};
                 _profileMeta = meta; // cache for callback handler
+                _profileId = d.id || null;
 
                 // Immutable display fields
                 $('#name').val(d.fullName || '');
@@ -544,7 +546,9 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
         // Retrieve with Singpass button
         $('#btn-retrieve-myinfo').on('click', function() {
-            window.location.href = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.pathname + '?step=callback');
+            var startUrl = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.pathname + '?step=callback');
+            if (_profileId) { startUrl += '&userId=' + encodeURIComponent(_profileId); }
+            window.location.href = startUrl;
         });
     }
 
@@ -644,6 +648,8 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         var url = new URL(window.location.href);
         url.searchParams.delete('step');
         url.searchParams.delete('status');
+        url.searchParams.delete('flowId');
+        url.searchParams.delete('myInfoSubject');
         window.history.replaceState({}, '', url.toString());
     }
 })(jQuery);
