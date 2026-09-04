@@ -522,7 +522,10 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 success: function(res) {
                     if (res.success) {
                         $('#myinfo_flow_id').val('');
-                        var msgText = 'Profile updated successfully! 50 points awarded! <a href="/my-account/">Back to My Account page</a>';
+                        var awarded = !!(res.data && res.data.singpassPointsAwarded);
+                        var msgText = awarded
+                            ? 'Profile updated successfully! 50 points awarded! <a href="/my-account/">Back to My Account page</a>'
+                            : 'Profile updated successfully! <a href="/my-account/">Back to My Account page</a>';
                         msg.removeClass('error').addClass('success').html(msgText).show();
                         loadProfileData();
                     } else {
@@ -567,6 +570,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             $('#myinfo-conflict-title').text(title);
             $('#myinfo-conflict-reason').text(reason);
             $('#myinfo-conflict-lightbox').addClass('show');
+            $('#myinfo_flow_id').val('');
         }
 
         function onMyInfoPulled() {

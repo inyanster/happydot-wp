@@ -345,7 +345,8 @@ class FlexCore_Server_Ajax_Handler
 
             wp_send_json_success(array(
                 'message' => $response['message'],
-                'redirect' => $redirect
+                'redirect' => $redirect,
+                'singpassPointsAwarded' => !empty($response['data']['singpassPointsAwarded']),
             ));
         } else {
             // Collect message and detailed errors
