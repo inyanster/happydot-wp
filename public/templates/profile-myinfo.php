@@ -227,6 +227,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
     var apiBase = (window.flexcoreServerAjax && window.flexcoreServerAjax.myinfoApiBase) || '';
     var _profileMeta = null; // cached profile metadata
     var _profileId = null;
+    var _singpassPointFlag = null; // cached singpassPointFlag (50-pt eligibility)
 
     function mobileDigits(value) {
         var digits = String(value || '').replace(/\D/g, '');
@@ -340,6 +341,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 var d = res.data, meta = d.metaData || {};
                 _profileMeta = meta; // cache for callback handler
                 _profileId = d.id || null;
+                _singpassPointFlag = d.singpassPointFlag || null;
 
                 // Immutable display fields
                 $('#name').val(d.fullName || '');
@@ -578,7 +580,12 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         }
 
         function onMyInfoPulled() {
-            // Points awarded on form SAVE, not on MyInfo pull
+            // Points are awarded on form SAVE, not on MyInfo pull. Only show the
+            // "collect your 50 points" CTA when the user is still eligible.
+            if (_singpassPointFlag === '1') {
+                $('#myinfo-promo').hide();
+                return;
+            }
             $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your 50 points.');
             $('#myinfo-promo').show();
         }
