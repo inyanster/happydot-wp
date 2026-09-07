@@ -215,8 +215,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         // MyInfo endpoints live on the Node backend (staging.flexcore.theadventus.com),
         // NOT on WP admin-ajax. The flexcoreServerAjax.ajax_url is the WP REST proxy URL,
         // which would 404 for /auth/myinfo/* routes.
-        apiBase: (window.flexcoreServerAjax && window.flexcoreServerAjax.myinfoApiBase)
-                 || 'https://staging.flexcore.theadventus.com/api/v1',
+        apiBase: (window.flexcoreServerAjax && window.flexcoreServerAjax.myinfoApiBase) || '',
 
         startMyInfo: function() {
             $('#btn-retrieve-myinfo').hide();

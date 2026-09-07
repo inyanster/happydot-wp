@@ -224,7 +224,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 (function($) {
     'use strict';
 
-    var apiBase = 'https://staging.flexcore.theadventus.com/api/v1';
+    var apiBase = (window.flexcoreServerAjax && window.flexcoreServerAjax.myinfoApiBase) || '';
     var _profileMeta = null; // cached profile metadata
     var _profileId = null;
 

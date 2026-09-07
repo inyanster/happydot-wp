@@ -182,6 +182,7 @@ class FlexCore_Server_Public
         // Localize the script with new data
         wp_localize_script('flexcore-server-public', 'flexcoreServerAjax', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
+            'myinfoApiBase' => trailingslashit(get_option('flexcore_api_base_url', '')) . 'api/v1',
             'token' => FlexCore_Server_Session::get_token() ?? '',
             'nonce' => wp_create_nonce('flexcore-server-nonce'),
             'rewardNonce' => wp_create_nonce('flexcore-reward-nonce'),
