@@ -895,21 +895,20 @@ class FlexCore_Server_Ajax_Handler
                     ));
                     return;
                 }
-                $membership_status = FlexCore_Server_Session::get_user_membership_status();
-                if (!empty($profile_data['metaData'])) {
-                    if (isset($profile_data['metaData']['isProfileCompleted'])) {
-                        if ($profile_data['metaData']['isProfileCompleted'] == true && $membership_status == '4') {
-                            foreach ($rewards as $reward) {
-                                $link = home_url('/rewards_preview/?id=' . urlencode($reward['id']));
-                                $buttons[$reward['id']] = '<a class="hd-btn" href="' . esc_url($link) . '">SELECT</a>';
-                            }
-                        } else {
-                            $account_url = home_url('/my-account/');
-                            $button = '<a class="hd-btn" href="' . esc_url($account_url) . '"> COMPLETE YOUR ACCOUNT TO REDEEM</a>';
-                            foreach ($rewards as $reward) {
-                                $buttons[$reward['id']] = $button;
-                            }
-                        }
+                // Use the freshly fetched profile: the session copy of the membership status is
+                // only populated on the refer-a-friend pages, so it is null here on /rewards.
+                $membership_status = $profile_data['membershipStatus'] ?? FlexCore_Server_Session::get_user_membership_status();
+                $is_profile_completed = !empty($profile_data['metaData']['isProfileCompleted']);
+                if ($is_profile_completed || (string) $membership_status === '4') {
+                    foreach ($rewards as $reward) {
+                        $link = home_url('/rewards_preview/?id=' . urlencode($reward['id']));
+                        $buttons[$reward['id']] = '<a class="hd-btn" href="' . esc_url($link) . '">SELECT</a>';
+                    }
+                } else {
+                    $account_url = home_url('/my-account/');
+                    $button = '<a class="hd-btn" href="' . esc_url($account_url) . '"> COMPLETE YOUR ACCOUNT TO REDEEM</a>';
+                    foreach ($rewards as $reward) {
+                        $buttons[$reward['id']] = $button;
                     }
                 }
             }
@@ -1386,7 +1385,7 @@ class FlexCore_Server_Ajax_Handler
                 $merged_data['currentPoints'] = $points_response['data']['currentPoints'] ?? 0;
                 $merged_data['luckyDrawChances'] = $points_response['data']['totalLuckyDrawChance'] ?? 0;
                 $merged_data['gameChances'] = $points_response['data']['gameChances'] ?? 0;
-                $merged_data['totalSurveyDone'] = $points_response['data']['totalSurveyDone'] ?? 0;
+                $merged_data['completedTotal'] = $points_response['data']['completedTotal'] ?? 0;
                 $merged_data['pointsExpiryNotice'] = $points_response['data']['pointsExpiryNotice'] ?? '';
             }
             if (!is_wp_error($message_response) && !empty($message_response['success'])) {

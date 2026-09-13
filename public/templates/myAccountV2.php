@@ -86,7 +86,7 @@ $membership_status = FlexCore_Server_Session::get_user_membership_status();
         </div>
 
         <!-- Unnumbered: Complete Profile Verification with Singpass (between step 2 and step 3) -->
-        <div class="profile-step verification-step<?php echo $is_singpass_user ? ' singpass-greyed' : ''; ?>">
+        <div class="profile-step verification-step<?php echo $is_singpass_user ? ' singpass-greyed' : ' singpass-highlight'; ?>">
             <div class="profile-step-number" style="visibility:hidden;"></div>
             <div class="profile-step-info<?php echo $is_singpass_user ? ' disable' : ''; ?>">
                 <div class="heading-wrap">

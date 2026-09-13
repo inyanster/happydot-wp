@@ -27,11 +27,11 @@
             var points = response.data.data.currentPoints || 0;
             var luckyDrawChances = response.data.data.luckyDrawChances || 0;
             var gameChances = response.data.data.gameChances || 0;
-            var totalSurveyDone = response.data.data.totalSurveyDone || 0;
+            var completedTotal = response.data.data.completedTotal || 0;
             var pointsExpiryNotice = response.data.data.pointsExpiryNotice || "";
 
             $("#myaccount-points").text(points.toLocaleString());
-            $("#myaccount-surveys-done").text(totalSurveyDone);
+            $("#myaccount-surveys-done").text(completedTotal);
             $("#myaccount-lucky-draw").text(luckyDrawChances);
             $("#myaccount-game-chances").text(gameChances);
 
@@ -96,12 +96,12 @@
               $(".profile-step.survey-step .content").show();
             }
 
-            // Unnumbered verification box: greyed-out for Singpass, active otherwise
+            // Unnumbered verification box: greyed-out for Singpass, highlighted otherwise
             if (isSingpassUser) {
-              $(".profile-step.verification-step").addClass("singpass-greyed");
+              $(".profile-step.verification-step").addClass("singpass-greyed").removeClass("singpass-highlight");
               $(".profile-step.verification-step .profile-step-info").addClass("disable");
             } else {
-              $(".profile-step.verification-step").removeClass("singpass-greyed");
+              $(".profile-step.verification-step").addClass("singpass-highlight").removeClass("singpass-greyed");
               $(".profile-step.verification-step .profile-step-info").removeClass("disable");
             }
 
