@@ -414,20 +414,32 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 }
             }
 
-            // Map MyInfo nationality to citizenship
-            // SG → singaporecitizen, anything else → leave blank (non-SG can't register)
-            if (fields.nationality !== undefined && fields.nationality !== null && fields.nationality !== '') {
-                var nationalityMap = {
-                    'SG':  'singaporecitizen',
-                    'SINGAPORE': 'singaporecitizen'
-                };
-                var mappedCitz = nationalityMap[fields.nationality.toUpperCase()];
-                if (mappedCitz) {
-                    setVal('#citizenship', mappedCitz);
-                }
-                // Non-SG nationality: leave citizenship blank → user can't proceed
-                // (the form will catch this on submit)
+            // Map MyInfo residency to citizenship
+            // residentialstatus scope: C = Singapore Citizen, P = Permanent Resident.
+            // A (Alien) / U (Unknown) / N (Not applicable) / blank (foreign pass
+            // holder) → leave blank (can't register).
+            var residentialStatusMap = {
+                'C': 'singaporecitizen',
+                'P': 'permanentResident'
+            };
+            // Legacy fallback: older payloads only carried nationality
+            // (citizenship of origin), which has no value for a PR.
+            var nationalityFallbackMap = {
+                'SG':  'singaporecitizen',
+                'SINGAPORE': 'singaporecitizen'
+            };
+            var mappedCitz = '';
+            if (fields.residentialStatus !== undefined && fields.residentialStatus !== null && fields.residentialStatus !== '') {
+                mappedCitz = residentialStatusMap[String(fields.residentialStatus).toUpperCase()] || '';
             }
+            if (!mappedCitz && fields.nationality !== undefined && fields.nationality !== null && fields.nationality !== '') {
+                mappedCitz = nationalityFallbackMap[String(fields.nationality).toUpperCase()] || '';
+            }
+            if (mappedCitz) {
+                setVal('#citizenship', mappedCitz);
+            }
+            // No resolvable residency/nationality: leave citizenship blank →
+            // user can't proceed (the form will catch this on submit)
 
             // Map MyInfo sex to gender
             // Backend already lowercases to 'male'/'female'/'others'; MyInfo raw codes are 'M'/'F'

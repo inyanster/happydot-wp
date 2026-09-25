@@ -311,9 +311,15 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             $('#dob').val(parts[2] + '/' + parts[1] + '/' + parts[0]);
         }
 
-        // Citizenship
+        // Citizenship — derived from residency (residentialstatus scope:
+        // C = Singapore Citizen, P = Permanent Resident).
+        // Legacy fallback: older payloads only carried nationality
+        // (citizenship of origin), which has no value for a PR.
+        var residentialStatusDisplayMap = { 'C': 'Singapore Citizen', 'P': 'Permanent Resident' };
         var citizenshipMap = { 'SG': 'Singapore Citizen', 'SINGAPORE': 'Singapore Citizen', 'PR': 'Permanent Resident' };
-        $('#citizenship_display').val(citizenshipMap[fields.nationality] || '');
+        var rsCode = (typeof fields.residentialStatus === 'string') ? fields.residentialStatus.toUpperCase() : '';
+        var natlCode = (typeof fields.nationality === 'string') ? fields.nationality.toUpperCase() : '';
+        $('#citizenship_display').val(residentialStatusDisplayMap[rsCode] || citizenshipMap[natlCode] || '');
 
         // Gender
         var genderMap = { 'M': 'Male', 'F': 'Female', 'male': 'Male', 'female': 'Female' };
