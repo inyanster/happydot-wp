@@ -51,9 +51,34 @@
     
 
 
-    // UNIQGift Dynamic Reward Validation and URL Rewrite Logic
-    
-    function checkRewardDataForUniqgift(data) {
+    // Voucher-provider dynamic validation and URL rewrite logic
+
+    // Reward categories that require the member to acknowledge the voucher terms
+    // before the reward can be claimed. A WOGI reward gets the same acknowledgement
+    // step as a UNIQGIFT one; every other provider keeps its previous behaviour.
+    var VOUCHER_ACK_CATEGORIES = ['uniqgift', 'wogi'];
+
+    // The ONE place that decides the acknowledgement wording.
+    // voucherTermsText comes from the reward payload (per reward, nullable); when a
+    // reward carries no terms we use provider-neutral wording that points the member
+    // at the voucher itself. Never a hardcoded date, never another brand's copy.
+    // The value is used as the complement of "must be utilised by", so it reads
+    // correctly for a date ("31st May 2026") and for a phrase
+    // ("the expiry date stated in your voucher email").
+    function getVoucherAcknowledgement(termsText) {
+        var terms = (typeof termsText === 'string') ? termsText.trim() : '';
+        var utilisation = terms !== ''
+            ? 'must be utilised by ' + terms
+            : 'must be utilised by the expiry date shown on the voucher';
+
+        return {
+            acknowledgement: 'I acknowledge that this e-voucher ' + utilisation +
+                '. Unutilised vouchers will not be reinstated, and points used for the redemption will not be returned after this date.',
+            error: 'Please acknowledge that the e-voucher ' + utilisation + ' before claiming the reward.'
+        };
+    }
+
+    function captureRewardProviderState(data) {
         var rewardObj = null;
         
         // Handle deeply nested WordPress AJAX response format {success: true, data: { currentPoints: ..., data: {...}}}
@@ -68,11 +93,9 @@
         if (rewardObj) {
             if (rewardObj.name) window.__currentRewardName = rewardObj.name;
             if (rewardObj.rewardType && rewardObj.rewardType.category) {
-                if (rewardObj.rewardType.category === 'uniqgift') {
-                    window.__isUniqGiftReward = true;
-                } else {
-                    window.__isUniqGiftReward = false;
-                }
+                window.__rewardCategory = String(rewardObj.rewardType.category).toLowerCase();
+                window.__requiresVoucherAck = VOUCHER_ACK_CATEGORIES.indexOf(window.__rewardCategory) !== -1;
+                window.__voucherTermsText = (typeof rewardObj.voucherTermsText === 'string') ? rewardObj.voucherTermsText : '';
             }
         }
     }
@@ -85,7 +108,7 @@
             promise.then(function(response) {
                 var clone = response.clone();
                 clone.json().then(function(data) {
-                    checkRewardDataForUniqgift(data);
+                    captureRewardProviderState(data);
                 }).catch(function(e) {});
             }).catch(function(e) {});
             return promise;
@@ -101,7 +124,7 @@
                 try {
                     if (xhr.responseText) {
                         var data = JSON.parse(xhr.responseText);
-                        checkRewardDataForUniqgift(data);
+                        captureRewardProviderState(data);
                     }
                 } catch (e) {}
             });
@@ -159,47 +182,65 @@
                     }
                 }
 
-                // 2. Add validation checkbox for UNIQGift rewards
-                // Strictly rely on the Flexcore API to determine if it's a UNIQGift reward. No text fallback to prevent false positives!
-                var isUniqGift = window.__isUniqGiftReward === true;
+                // 2. Add the voucher acknowledgement step for the providers that need it
+                // Strictly rely on the Flexcore API to determine the reward category. No text fallback to prevent false positives!
+                var requiresVoucherAck = window.__requiresVoucherAck === true;
                 
-                if (isUniqGift) {
-                    $('#uniqgift-validation-wrapper').show();
+                if (requiresVoucherAck) {
+                    // The wording is produced in exactly one place (getVoucherAcknowledgement)
+                    // from this reward's own voucherTermsText.
+                    var ackCopy = getVoucherAcknowledgement(window.__voucherTermsText);
+                    $('#voucher-ack-text').text(ackCopy.acknowledgement);
+                    $('#voucher-ack-error-msg').text(ackCopy.error);
+                    $('#voucher-ack-wrapper').show();
 
                     // Attach listener to hide error when checked
-                    if (!$('#uniqgift-ack-checkbox').data('bound')) {
-                        $('#uniqgift-ack-checkbox').data('bound', true).on('change', function() {
+                    if (!$('#voucher-ack-checkbox').data('bound')) {
+                        $('#voucher-ack-checkbox').data('bound', true).on('change', function() {
                             if (this.checked) {
-                                $('#uniqgift-error-msg').hide();
+                                $('#voucher-ack-error-msg').hide();
                             }
                         });
                     }
                 } else {
-                    $('#uniqgift-validation-wrapper').hide();
+                    $('#voucher-ack-wrapper').hide();
                 }
 
                 // 3. Attach capture-phase event listeners to REDEEM buttons to prevent React/Vue events from firing
-                if (isUniqGift) {
+                if (requiresVoucherAck) {
                     var redeemBtns = document.querySelectorAll('button, input[type="button"], input[type="submit"]');
                     redeemBtns.forEach(function(btn) {
                         var text = btn.innerText ? btn.innerText.trim().toUpperCase() : '';
                         var val = btn.value ? btn.value.trim().toUpperCase() : '';
                         
                         if (text === 'REDEEM' || val === 'REDEEM') {
-                            if (!btn.hasAttribute('data-uniqgift-bound')) {
-                                btn.setAttribute('data-uniqgift-bound', 'true');
+                            if (!btn.hasAttribute('data-voucher-ack-bound')) {
+                                btn.setAttribute('data-voucher-ack-bound', 'true');
                                 btn.addEventListener('click', function(e) {
-                                    var checkbox = document.getElementById('uniqgift-ack-checkbox');
+                                    var checkbox = document.getElementById('voucher-ack-checkbox');
                                     if (checkbox && !checkbox.checked) {
                                         e.preventDefault();
                                         e.stopPropagation(); // Stop propagation to React root
-                                        document.getElementById('uniqgift-error-msg').style.display = 'block';
+                                        document.getElementById('voucher-ack-error-msg').style.display = 'block';
                                     }
                                 }, true); // Use capture phase to intercept before React/Vue
                             }
                         }
                     });
                 }
+
+                // 4. Provider-specific voucher terms.
+                // The merchant list / exclusions carried by the template are UNIQGIFT's
+                // branding, so they are only shown for UNIQGIFT rewards. The WOGI block
+                // ships empty and reveals itself as soon as copy is added to it, so a
+                // WOGI voucher shows nothing today and needs no code change later.
+                if (window.__rewardCategory === 'uniqgift') {
+                    $('#uniqgift-terms').show();
+                } else {
+                    $('#uniqgift-terms').hide();
+                }
+                var hasWogiTerms = $.trim($('#wogi-terms').text()) !== '';
+                $('#wogi-terms').toggle(hasWogiTerms);
             } // END of pathname check
         }, 1000);
     });
