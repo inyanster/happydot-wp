@@ -117,12 +117,12 @@ display: none;
 <div class="redeem-form-wrap">
     <div id="info" style="margin-bottom: 30px;"></div>
 
-    <div id="uniqgift-validation-wrapper" style="display: none; margin: 20px 0; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #f8fafc;">
+    <div id="voucher-ack-wrapper" style="display: none; margin: 20px 0; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background-color: #f8fafc;">
         <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; margin: 0; font-family: inherit;">
-            <input type="checkbox" id="uniqgift-ack-checkbox" style="margin-top: 4px; flex-shrink: 0; width: 16px; height: 16px;">
-            <span style="font-size: 14px; line-height: 1.5; color: #333;">I acknowledge that this e-voucher must be utilised by <strong>31st May 2026</strong>. Unutilised vouchers will not be reinstated, and points used for the redemption will not be returned after this date.</span>
+            <input type="checkbox" id="voucher-ack-checkbox" style="margin-top: 4px; flex-shrink: 0; width: 16px; height: 16px;">
+            <span id="voucher-ack-text" style="font-size: 14px; line-height: 1.5; color: #333;"></span>
         </label>
-        <p id="uniqgift-error-msg" class="field-error" style="display: none; color: #dc2626; font-size: 14px; margin-top: 10px; margin-bottom: 0; font-weight: 500;">Please acknowledge that the e-voucher must be utilised by 31st May 2026 before claiming the reward.</p>
+        <p id="voucher-ack-error-msg" class="field-error" style="display: none; color: #dc2626; font-size: 14px; margin-top: 10px; margin-bottom: 0; font-weight: 500;"></p>
     </div>
 
     <div class="hd-error">You do not have enough points to redeem.</div>
@@ -233,17 +233,38 @@ display: none;
             <div class="termCondition-ctn">
                
             </div>
-            <!-- <ul class="termCondition-list">
-                <li>View shop exclusion <a href="https://www.uniqgiftvoucher.com/egift-card-groceries-shop-exclusions" target="_blank">here</a>.</li>
-                <li>Voucher denomination: $10 only</li>
-                <li>This voucher is issued by Option Gift Pte Ltd which owns the registered trademark UNIQGIFT.</li>
-                <li>This voucher must be presented before payment.</li>
-                <li>This voucher cannot be exchanged for cash and any unused balance at expiry will not be refunded.</li>
-                <li>This voucher cannot be replaced if lost, damaged, stolen or expired.</li>
-                <li>Option Gift Pte Ltd reserves the right to vary these terms and conditions at any time without prior notice.</li>
-                <li>Option Gift Pte Ltd shall not be responsible for any issue that arises in connection with the redemption and/or use of this voucher and shall not be responsible or held liable for any loss, injury, damage or harm suffered or incurred by or in connection with the redemption or use of the voucher by any person.</li>
-                <li>Redeemed vouchers can be used at participating merchants that accept $10 redemption amount indicated on <a href="#">https://www.uniqgiftvoucher.com/egiftcard/</a></li>
-            </ul> -->
+            <?php
+            /*
+             * Provider-gated voucher terms.
+             *
+             * The merchant list and exclusions below belong to UNIQGIFT (Option Gift
+             * Pte Ltd), so they may only be shown on a UNIQGIFT voucher. The WOGI block
+             * is deliberately EMPTY until WOGI supplies its own merchant / exclusion
+             * copy: showing nothing is correct, showing UNIQGIFT's text on a WOGI
+             * voucher is not. Drop the WOGI copy into #wogi-terms when it exists - the
+             * block reveals itself automatically and needs no further code change.
+             *
+             * Both blocks are hidden here and revealed provider-side in
+             * public/js/flexcore-server-public.js from the reward's own category, the
+             * same way the acknowledgement step is gated.
+             */
+            ?>
+            <div id="uniqgift-terms" class="termCondition-provider" style="display: none;">
+                <ul class="termCondition-list">
+                    <li>View shop exclusion <a href="https://www.uniqgiftvoucher.com/egift-card-groceries-shop-exclusions" target="_blank">here</a>.</li>
+                    <li>Voucher denomination: $10 only</li>
+                    <li>This voucher is issued by Option Gift Pte Ltd which owns the registered trademark UNIQGIFT.</li>
+                    <li>This voucher must be presented before payment.</li>
+                    <li>This voucher cannot be exchanged for cash and any unused balance at expiry will not be refunded.</li>
+                    <li>This voucher cannot be replaced if lost, damaged, stolen or expired.</li>
+                    <li>Option Gift Pte Ltd reserves the right to vary these terms and conditions at any time without prior notice.</li>
+                    <li>Option Gift Pte Ltd shall not be responsible for any issue that arises in connection with the redemption and/or use of this voucher and shall not be responsible or held liable for any loss, injury, damage or harm suffered or incurred by or in connection with the redemption or use of the voucher by any person.</li>
+                    <li>Redeemed vouchers can be used at participating merchants that accept $10 redemption amount indicated on <a href="#">https://www.uniqgiftvoucher.com/egiftcard/</a></li>
+                </ul>
+            </div>
+            <div id="wogi-terms" class="termCondition-provider" style="display: none;">
+                <?php /* WOGI merchant list / exclusions and brand terms go here once WOGI supplies them. */ ?>
+            </div>
         </div>
 </div>
     </div>
