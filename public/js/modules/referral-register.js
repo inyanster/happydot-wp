@@ -545,7 +545,7 @@
 			if (!$("#citizenship").val()) {
 				$("#citizenship").addClass("has-error").removeClass("is-valid");
 				if ($(".citizen-error").length) {
-					$(".citizen-error").text("Citizenship is required.").show();
+					$(".citizen-error").text("Residential status is required.").show();
 				}
 				valid = false;
 			} else {

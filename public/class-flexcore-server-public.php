@@ -277,7 +277,7 @@ class FlexCore_Server_Public
                 // );
                 wp_enqueue_script(
                     'flexcore-server-merged-register',
-                    plugin_dir_url(__FILE__) . 'js/modules/mergedRegistration.js?t=202608281500',
+                    plugin_dir_url(__FILE__) . 'js/modules/mergedRegistration.js?t=202610011105',
                     array('jquery', 'flexcore-server-public'),
                     FLEXCORE_SERVER_VERSION,
                     true
@@ -329,7 +329,7 @@ class FlexCore_Server_Public
                 );
                 wp_enqueue_script(
                     'flexcore-server-referral-register-js', // unique handle for register.js
-                    plugin_dir_url(__FILE__) . 'js/modules/referral-register.js',
+                    plugin_dir_url(__FILE__) . 'js/modules/referral-register.js?t=202610011106',
                     array('jquery', 'flexcore-server-public'),
                     FLEXCORE_SERVER_VERSION,
                     true
