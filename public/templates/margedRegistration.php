@@ -228,7 +228,7 @@ if (!defined('ABSPATH')) {
             <div class="hd-col-6">
                 <div class="hd-form-group" style="position:relative;">
                     <label class="hd-label" for="citizenship">
-                        <?php esc_html_e('Citizenship', 'flexcore-server'); ?><span>*</span>
+                        <?php esc_html_e('Residential Status', 'flexcore-server'); ?><span>*</span>
                         <span style="position:relative;display:inline-block;">
                             <span style="cursor:pointer;" tabindex="0" class="citizenship-tooltip-icon"><i class="fa fa-question-circle" style="font-size:15px;  color: black;    margin-left: 2px;"></i></span>
                             <span class="citizenship-tooltip-text" style="display:none;position:absolute;left:25px;top:-10px;z-index:10;background:#222;color:#fff;padding:10px 12px;border-radius:8px;font-size:15px;min-width:320px;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
