@@ -91,7 +91,7 @@ $membership_status = FlexCore_Server_Session::get_user_membership_status();
             <div class="profile-step-info<?php echo $is_singpass_user ? ' disable' : ''; ?>">
                 <div class="heading-wrap">
                     <h3>COMPLETE PROFILE VERIFICATION WITH SINGPASS <span class="verification-points">+50 HappyPoints</span></h3>
-                    <p>Quick profile verification by clicking on Retrieve Myinfo with Singpass on My Profile page.</p>
+                    <p>Quick profile verification by clicking Update with Singpass on My Profile page.</p>
                 </div>
             </div>
         </div>

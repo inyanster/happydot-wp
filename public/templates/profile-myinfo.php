@@ -120,7 +120,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
     <!-- Singpass button -->
     <div id="myinfo-buttons" style="display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
         <button type="button" id="btn-retrieve-myinfo" style="background:none;border:none;padding:0;cursor:pointer;">
-            <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass-button.png'); ?>" alt="Retrieve Myinfo with Singpass" style="height:48px;width:auto;">
+            <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass/update_with_singpass_white_with_outline.svg'); ?>" alt="Update with Singpass" style="height:48px;width:auto;">
         </button>
     </div>
 
@@ -552,7 +552,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             });
         });
 
-        // Retrieve with Singpass button
+        // Update with Singpass button
         $('#btn-retrieve-myinfo').on('click', function() {
             var startUrl = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.pathname + '?step=callback');
             if (_profileId) { startUrl += '&userId=' + encodeURIComponent(_profileId); }
