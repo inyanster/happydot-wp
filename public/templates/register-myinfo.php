@@ -4,7 +4,7 @@
  *
  * UX flow:
  *  - Form is ALWAYS visible on page load
- *  - "Retrieve with Singpass MyInfo" button at top of form
+ *  - "Register with Singpass" button at top of form
  *  - If user clicks it: redirects to MyInfo → returns → form prefilled + locked
  *  - If user skips it: full manual registration
  *
@@ -27,25 +27,6 @@ $flow_id       = isset($_GET['flowId'])       ? sanitize_text_field($_GET['flowI
 $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myinfo_status']) : '';
 ?>
 <style>
-    /* Singpass retrieve button */
-    .singpass-retrieve-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: #CA0D07;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 12px 24px;
-        font-size: 15px;
-        font-weight: 600;
-        cursor: pointer;
-        text-decoration: none;
-        margin-bottom: 20px;
-        transition: background 0.2s;
-    }
-    .singpass-retrieve-btn:hover { background: #a30b05; color: #fff; }
-    .singpass-retrieve-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
 
     /* Ineligibility lightbox */
     .myinfo-lightbox {
@@ -194,10 +175,10 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
 <!-- Always-visible registration form -->
 <div id="singpass-form-section">
-    <!-- Retrieve with Singpass button + promo text -->
+    <!-- Register with Singpass button + promo text -->
     <div class="myinfo-top-row" style="display: flex; align-items: center; gap: 24px; margin-bottom: 24px; flex-wrap: wrap;">
         <button type="button" id="btn-retrieve-myinfo" onclick="FlexcoreRegisterMyinfo.startMyInfo(); return false;" style="background:none;border:none;padding:0;cursor:pointer;">
-            <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass-button.png'); ?>" alt="Retrieve Myinfo with Singpass" style="height:48px;width:auto;">
+            <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass/register_with_singpass_white_with_outline.svg'); ?>" alt="Register with Singpass" style="height:48px;width:auto;">
         </button>
     </div>
 

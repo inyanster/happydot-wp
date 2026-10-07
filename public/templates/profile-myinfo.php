@@ -109,7 +109,12 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
     <!-- Promo message (hidden by default, shown if singpassPointFlag !== '1') -->
     <div id="myinfo-promo" style="display:none; background:#FFF3CD; border:1px solid #FFECB5; border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#856404; font-size:14px;">
-        <span id="myinfo-promo-text">Verify with Singpass today and be awarded with 50 points immediately!</span>
+        <span id="myinfo-promo-text"><?php
+            $flexcore_singpass_points = FlexCore_Server_Public::get_singpass_points_settings();
+            echo !empty($flexcore_singpass_points['profileUpdate']['enabled'])
+                ? 'Verify with Singpass today and be awarded with ' . esc_html($flexcore_singpass_points['profileUpdate']['points']) . ' points immediately!'
+                : 'Verify with Singpass to keep your details up to date.';
+        ?></span>
     </div>
 
     <!-- MyInfo unavailable notice -->
@@ -120,7 +125,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
     <!-- Singpass button -->
     <div id="myinfo-buttons" style="display:flex; align-items:center; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
         <button type="button" id="btn-retrieve-myinfo" style="background:none;border:none;padding:0;cursor:pointer;">
-            <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass-button.png'); ?>" alt="Retrieve Myinfo with Singpass" style="height:48px;width:auto;">
+            <img src="<?php echo esc_url(plugin_dir_url(dirname(__FILE__, 2)) . 'public/images/singpass/update_with_singpass_white_with_outline.svg'); ?>" alt="Update with Singpass" style="height:48px;width:auto;">
         </button>
     </div>
 
@@ -227,7 +232,10 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
     var apiBase = (window.flexcoreServerAjax && window.flexcoreServerAjax.myinfoApiBase) || '';
     var _profileMeta = null; // cached profile metadata
     var _profileId = null;
-    var _singpassPointFlag = null; // cached singpassPointFlag (50-pt eligibility)
+    var _singpassPointFlag = null; // cached singpassPointFlag (points eligibility)
+    // Published points offer. Falls back to the platform defaults so the copy
+    // can never print NaN if the localised value is missing.
+    var _singpassPoints = (window.flexcoreServerAjax && flexcoreServerAjax.singpassPoints) || { signup: { enabled: true, points: 50 }, profileUpdate: { enabled: true, points: 50 } };
 
     function mobileDigits(value) {
         var digits = String(value || '').replace(/\D/g, '');
@@ -374,8 +382,12 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                     $('#myinfo-prefilled-notice').addClass('show');
                 }
 
-                // Promo message — show if point flag is 2 or null
-                if (d.singpassPointFlag === '2' || !d.singpassPointFlag) {
+                // Promo message: only when the offer is ON and the member is
+                // still eligible (flag 2 or blank). When it is off we promise
+                // nothing, rather than advertising points we will not award.
+                var _promoEligible = (d.singpassPointFlag === '2' || !d.singpassPointFlag);
+                if (_promoEligible && _singpassPoints.profileUpdate.enabled) {
+                    $('#myinfo-promo-text').text('Verify with Singpass today and be awarded with ' + _singpassPoints.profileUpdate.points + ' points immediately!');
                     $('#myinfo-promo').show();
                 } else {
                     $('#myinfo-promo').hide();
@@ -534,7 +546,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                         $('#myinfo_flow_id').val('');
                         var awarded = !!(res.data && res.data.singpassPointsAwarded);
                         var msgText = awarded
-                            ? 'Profile updated successfully! 50 points awarded! <a href="/my-account/">Back to My Account page</a>'
+                            ? 'Profile updated successfully! ' + _singpassPoints.profileUpdate.points + ' points awarded! <a href="/my-account/">Back to My Account page</a>'
                             : 'Profile updated successfully! <a href="/my-account/">Back to My Account page</a>';
                         msg.removeClass('error').addClass('success').html(msgText).show();
                         loadProfileData();
@@ -552,7 +564,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
             });
         });
 
-        // Retrieve with Singpass button
+        // Update with Singpass button
         $('#btn-retrieve-myinfo').on('click', function() {
             var startUrl = apiBase + '/auth/myinfo/start?returnTo=' + encodeURIComponent(window.location.pathname + '?step=callback');
             if (_profileId) { startUrl += '&userId=' + encodeURIComponent(_profileId); }
@@ -587,12 +599,12 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
 
         function onMyInfoPulled() {
             // Points are awarded on form SAVE, not on MyInfo pull. Only show the
-            // "collect your 50 points" CTA when the user is still eligible.
-            if (_singpassPointFlag === '1') {
+            // collect CTA when the offer is ON and the user is still eligible.
+            if (_singpassPointFlag === '1' || !_singpassPoints.profileUpdate.enabled) {
                 $('#myinfo-promo').hide();
                 return;
             }
-            $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your 50 points.');
+            $('#myinfo-promo-text').text('Almost done! Click "Save" below to secure your details and collect your ' + _singpassPoints.profileUpdate.points + ' points.');
             $('#myinfo-promo').show();
         }
 

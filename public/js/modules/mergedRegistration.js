@@ -697,7 +697,7 @@ if (utm_string_present && referral_code_absent) {
       if (!$("#citizenship").val()) {
         $("#citizenship").addClass("has-error").removeClass("is-valid");
         if ($(".citizen-error").length) {
-          $(".citizen-error").text("Citizenship is required.").show();
+          $(".citizen-error").text("Residential status is required.").show();
         }
         valid = false;
       } else {

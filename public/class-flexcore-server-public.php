@@ -202,6 +202,9 @@ class FlexCore_Server_Public
             'dashboardUrl' => get_permalink(get_option('flexcore_dashboard_page')),
             'resetPasswordUrl' => get_permalink(get_option('flexcore_reset_password_page')),
             'profileUrl' => get_permalink(get_option('flexcore_profile_page')),
+            // The published Singpass MyInfo points offer, so the member-facing
+            // copy can print the real number instead of a hardcoded one.
+            'singpassPoints' => self::get_singpass_points_settings(),
             'myAccountUrl' => get_permalink(get_option('flexcore_my_account_page')),
             'i18n' => array(
                 'loading' => __('Loading...', 'flexcore-server'),
@@ -277,7 +280,7 @@ class FlexCore_Server_Public
                 // );
                 wp_enqueue_script(
                     'flexcore-server-merged-register',
-                    plugin_dir_url(__FILE__) . 'js/modules/mergedRegistration.js?t=202608281500',
+                    plugin_dir_url(__FILE__) . 'js/modules/mergedRegistration.js?t=202610011105',
                     array('jquery', 'flexcore-server-public'),
                     FLEXCORE_SERVER_VERSION,
                     true
@@ -329,7 +332,7 @@ class FlexCore_Server_Public
                 );
                 wp_enqueue_script(
                     'flexcore-server-referral-register-js', // unique handle for register.js
-                    plugin_dir_url(__FILE__) . 'js/modules/referral-register.js',
+                    plugin_dir_url(__FILE__) . 'js/modules/referral-register.js?t=202610011106',
                     array('jquery', 'flexcore-server-public'),
                     FLEXCORE_SERVER_VERSION,
                     true
@@ -530,6 +533,65 @@ class FlexCore_Server_Public
     /**
      * Register all shortcodes
      */
+    /**
+     * The admin-configurable Singpass MyInfo points offer, used by the
+     * member-facing copy so the pages never promise a number the platform is not
+     * actually paying.
+     *
+     * Cached 5 minutes. On any failure it falls back to the last known good
+     * value and then to the platform defaults, so a member page never breaks and
+     * never silently advertises a zero.
+     */
+    public static function get_singpass_points_settings()
+    {
+        $cached = get_transient('flexcore_singpass_points');
+        if (is_array($cached)) {
+            return $cached;
+        }
+
+        $defaults = array(
+            'signup' => array('enabled' => true, 'points' => 50),
+            'profileUpdate' => array('enabled' => true, 'points' => 50),
+        );
+
+        $base = get_option('flexcore_api_base_url', '');
+        if (empty($base)) {
+            return $defaults;
+        }
+
+        $response = wp_remote_get(
+            trailingslashit($base) . 'api/v1/settings/singpass-points',
+            array('timeout' => 5)
+        );
+
+        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
+            $stale = get_option('flexcore_singpass_points_last');
+            return is_array($stale) ? $stale : $defaults;
+        }
+
+        $body = json_decode(wp_remote_retrieve_body($response), true);
+        $data = (isset($body['data']) && is_array($body['data'])) ? $body['data'] : null;
+        if (!$data || !isset($data['signup'], $data['profileUpdate'])) {
+            return $defaults;
+        }
+
+        $settings = array(
+            'signup' => array(
+                'enabled' => !empty($data['signup']['enabled']),
+                'points'  => (int) $data['signup']['points'],
+            ),
+            'profileUpdate' => array(
+                'enabled' => !empty($data['profileUpdate']['enabled']),
+                'points'  => (int) $data['profileUpdate']['points'],
+            ),
+        );
+
+        set_transient('flexcore_singpass_points', $settings, 5 * MINUTE_IN_SECONDS);
+        update_option('flexcore_singpass_points_last', $settings, false);
+
+        return $settings;
+    }
+
     private function register_shortcodes()
     {
         error_log('FlexCore: Registering shortcodes');
