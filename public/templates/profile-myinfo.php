@@ -151,7 +151,7 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                 <input class="hd-formfild field-immutable" type="text" id="dob" readonly>
             </div>
             <div class="hd-form-group" style="flex:1; min-width:200px;">
-                <label>Citizenship <span style="color:red">*</span></label>
+                <label>Residential Status <span style="color:red">*</span></label>
                 <input class="hd-formfild field-immutable" type="text" id="citizenship_display" readonly>
             </div>
         </div>
