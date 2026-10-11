@@ -343,7 +343,7 @@ class FlexCore_Server_Public
                     'flexcore-server-referral-history',
                     plugin_dir_url(__FILE__) . 'js/modules/referral-history.js',
                     array('jquery', 'flexcore-server-public'),
-                    FLEXCORE_SERVER_VERSION,
+                    filemtime(plugin_dir_path(__FILE__) . 'js/modules/referral-history.js'),
                     true
                 );
             }
