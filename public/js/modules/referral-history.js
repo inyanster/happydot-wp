@@ -17,7 +17,9 @@
       // Ensure max date is always ≥ min date and ≤ today
       $("#min").on("change", function () {
         const minVal = $(this).val();
-        const today = new Date().toISOString().split("T")[0];
+        const today = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Asia/Singapore",
+        }).format(new Date());
 
         // Update max's min and max attributes
         $("#max").attr("min", minVal);
@@ -35,7 +37,10 @@
       const oneMonthAgo = new Date();
       oneMonthAgo.setMonth(today.getMonth() - 1);
 
-      const formatDate = (date) => date.toISOString().split("T")[0];
+      const formatDate = (date) =>
+        new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Asia/Singapore",
+        }).format(date);
       const todayFormatted = formatDate(today);
       const oneMonthAgoFormatted = formatDate(oneMonthAgo);
 
@@ -160,10 +165,15 @@
     },
   };
   function formatDateToDDMMYYYY(dateString) {
+    if (!dateString) return "-";
     const date = new Date(dateString);
-    const isoDate = date.toISOString().split("T")[0];
-    const [year, month, day] = isoDate.split("-");
-    return `${day}/${month}/${year}`;
+    if (isNaN(date.getTime())) return "-";
+    return new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Singapore",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
   }
 
   $(document).ready(function () {
