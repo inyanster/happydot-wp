@@ -62,10 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
       } 
       if (showName) {
         document.querySelector("#name-group").style.display = "block";
-        const nameForForm = reward.data.rewardType.category == "paynow"
-          ? (reward.user.fullName || reward.user.name || "")
-          : (reward.user.name || "");
-        document.querySelector("#name").value = nameForForm;
+        // Prefill the authoritative name on every reward type. fullName is the
+        // name on record (the MyInfo legal name once Singpass is linked); name
+        // prefers the preferred name. Editability is unchanged.
+        document.querySelector("#name").value =
+          reward.user.fullName || reward.user.name || "";
         document.querySelector("#name").readOnly = !editName;
         if (reward.data.rewardType.category == "paynow") {
           document.querySelector("#name").style.backgroundColor = "#e9ecef";
