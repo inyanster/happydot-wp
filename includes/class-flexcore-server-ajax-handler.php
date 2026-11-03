@@ -955,7 +955,7 @@ class FlexCore_Server_Ajax_Handler
         $api = new FlexCore_Server_API();
 
         // Call API to get reward preview by ID
-        $response = $api->get_reward_preview($reward_id);
+        $response = $api->get_reward_preview($reward_id, $token);
         $response_current = $api->get_current_points($token);
         $response_user = $api->get_profile($token);
 
