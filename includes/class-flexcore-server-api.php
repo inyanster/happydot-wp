@@ -562,15 +562,21 @@ public function get_reward($token = null) {
     ));
 }
 
-public function get_reward_preview($reward_id) {
+public function get_reward_preview($reward_id, $token = null) {
     error_log('Preview reward ID from API: ' . $reward_id);
+
+    $headers = array(
+        'Accept' => 'application/json'
+    );
+    // The detail endpoint applies the same visibility rule as the catalogue,
+    // so a preview reward needs the member token to be readable at all.
+    if (!empty($token)) {
+        $headers['Authorization'] = 'Bearer ' . $token;
+    }
 
     return $this->request("api/v1/rewards/{$reward_id}", array(
         'method'  => 'GET',
-        'headers' => array(
-            'Accept' => 'application/json'      
-            
-        )
+        'headers' => $headers
     ));
 }
 
