@@ -487,7 +487,7 @@ class FlexCore_Server_Public
                     'flexcore-server-rewards-preview',
                     plugin_dir_url(__FILE__) . 'js/modules/rewards-preview.js',
                     array('jquery', 'flexcore-server-public'),
-                    FLEXCORE_SERVER_VERSION,
+                    filemtime(plugin_dir_path(__FILE__) . 'js/modules/rewards-preview.js'),
                     true
                 );
                 wp_enqueue_script(
