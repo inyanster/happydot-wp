@@ -62,7 +62,10 @@ document.addEventListener("DOMContentLoaded", () => {
       } 
       if (showName) {
         document.querySelector("#name-group").style.display = "block";
-        document.querySelector("#name").value = reward.user.name || "";
+        const nameForForm = reward.data.rewardType.category == "paynow"
+          ? (reward.user.fullName || reward.user.name || "")
+          : (reward.user.name || "");
+        document.querySelector("#name").value = nameForForm;
         document.querySelector("#name").readOnly = !editName;
         if (reward.data.rewardType.category == "paynow") {
           document.querySelector("#name").style.backgroundColor = "#e9ecef";
