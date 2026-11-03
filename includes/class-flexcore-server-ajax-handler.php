@@ -756,7 +756,7 @@ class FlexCore_Server_Ajax_Handler
         $api = new FlexCore_Server_API();
 
         // Call API to get rewards
-        $response = $api->get_reward();
+        $response = $api->get_reward(FlexCore_Server_Session::get_token());
 
         if (is_wp_error($response)) {
             wp_send_json_error(array('message' => $response->get_error_message()));
@@ -845,7 +845,7 @@ class FlexCore_Server_Ajax_Handler
         $api = new FlexCore_Server_API();
 
         // Call API to get rewards
-        $response = $api->get_reward();
+        $response = $api->get_reward(FlexCore_Server_Session::get_token());
         
         if (is_wp_error($response)) {
             wp_send_json_error(array('message' => $response->get_error_message()));
