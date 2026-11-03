@@ -547,12 +547,18 @@ error_log("Referral JSON Payload: " . $body);
     ));
 }
 
-public function get_reward() {
+public function get_reward($token = null) {
+    $headers = array(
+        'Accept' => 'application/json'
+    );
+    // A member token lets the API include preview rewards whitelisted to them.
+    // Anonymous callers get the public catalogue only.
+    if (!empty($token)) {
+        $headers['Authorization'] = 'Bearer ' . $token;
+    }
     return $this->request('api/v1/rewards?limit=50', array(
         'method'  => 'GET',
-        'headers' => array(           
-            'Accept'        => 'application/json'
-        )
+        'headers' => $headers
     ));
 }
 
