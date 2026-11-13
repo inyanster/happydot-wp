@@ -571,7 +571,8 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                         // ({mobileNumber: ["..."]}). jQuery's .html(object) empties
                         // the element instead of printing it, which is why a rejected
                         // save showed a blank alert. Render one line per field, the
-                        // same way profile.js and the sign-up module already do.
+                        // same way public/js/modules/profile.js does for the main
+                        // profile form.
                         var rawErr = (res.data && (res.data.message || res.data.details)) || 'Update failed';
                         msg.removeClass('success').addClass('error').html(profileErrorHtml(rawErr, 'Update failed')).show();
                     }
