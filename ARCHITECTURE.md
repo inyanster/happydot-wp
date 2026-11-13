@@ -52,3 +52,13 @@ Singpass is linked). The redemption prefill reads `fullName`.
 - The preview and redemption pages assume a signed-in member. Code on that
   path may index an API error as an array, so a missing token fails harder
   than it looks.
+
+## Errors shown to a member
+
+The API reports a validation failure as an object keyed by field
+(`{mobileNumber: ["..."]}`), not a string. jQuery's `.html(object)` empties the
+element instead of printing it, so handing an error straight to the alert box
+renders a blank one. `profileErrorHtml()` in
+`public/templates/profile-myinfo.php` flattens the object to one line per field;
+any new template that prints an API error goes through it, the way
+`profile.js` and the sign-up module already do.
