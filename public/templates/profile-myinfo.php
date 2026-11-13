@@ -288,6 +288,22 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
         return false;
     }
 
+    /**
+     * Turn an API error into HTML for the alert box.
+     * A validation error is an object keyed by field; jQuery would silently
+     * empty the box if it were handed the object, so flatten it here.
+     */
+    function profileErrorHtml(err, fallback) {
+        if (!err) return fallback;
+        if (typeof err !== 'object') return err;
+        var lines = '';
+        for (var field in err) {
+            var val = err[field];
+            lines += '<strong>' + field + '</strong>: ' + (Array.isArray(val) ? val.join(', ') : val) + '<br>';
+        }
+        return lines || fallback;
+    }
+
     function validateMobileNumber(value) {
         var digits = mobileDigits(value);
         if (digits.length < 8) {
@@ -551,13 +567,22 @@ $myinfo_status = isset($_GET['myinfo_status']) ? sanitize_text_field($_GET['myin
                         msg.removeClass('error').addClass('success').html(msgText).show();
                         loadProfileData();
                     } else {
-                        var errMsg = (res.data && res.data.message) || (res.data && res.data.details) || 'Update failed';
-                        msg.removeClass('success').addClass('error').html(errMsg).show();
+                        // The API's validation errors arrive as an object
+                        // ({mobileNumber: ["..."]}). jQuery's .html(object) empties
+                        // the element instead of printing it, which is why a rejected
+                        // save showed a blank alert. Render one line per field, the
+                        // same way profile.js and the sign-up module already do.
+                        var rawErr = (res.data && (res.data.message || res.data.details)) || 'Update failed';
+                        msg.removeClass('success').addClass('error').html(profileErrorHtml(rawErr, 'Update failed')).show();
                     }
                 },
                 error: function(xhr) {
                     var errText = 'An error occurred.';
-                    try { var r = JSON.parse(xhr.responseText); if (r.data && r.data.message) errText = r.data.message; } catch(e) {}
+                    try {
+                        var r = JSON.parse(xhr.responseText);
+                        var raw = r.data && (r.data.message || r.data.details);
+                        if (raw) errText = profileErrorHtml(raw, errText);
+                    } catch(e) {}
                     msg.removeClass('success').addClass('error').html(errText).show();
                 },
                 complete: function() { btn.prop('disabled', false); }
