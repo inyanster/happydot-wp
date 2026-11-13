@@ -59,6 +59,7 @@ The API reports a validation failure as an object keyed by field
 (`{mobileNumber: ["..."]}`), not a string. jQuery's `.html(object)` empties the
 element instead of printing it, so handing an error straight to the alert box
 renders a blank one. `profileErrorHtml()` in
-`public/templates/profile-myinfo.php` flattens the object to one line per field;
-any new template that prints an API error goes through it, the way
-`profile.js` and the sign-up module already do.
+`public/templates/profile-myinfo.php` flattens the object to one line per field,
+as `public/js/modules/profile.js` already does on the main profile form. The
+helper is local to that template's script, so a new template that prints an API
+error needs the same flattening rather than an object handed to `.html()`.
